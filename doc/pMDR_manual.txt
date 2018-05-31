@@ -1,0 +1,341 @@
+Manual: pMDR
+
+4/15/08
+
+1.  Introduction
+2.  Example
+3.  Input file format and parameters
+    a.  configuration file
+    b.  data file
+4.  Algorithm
+5.  Sample files
+    a.  input
+    b.  output
+    
+
+1.  Introduction
+
+    Multifactor dimensionality reduction (MDR) is a non-parametric, model 
+    free method for detecting gene-gene and gene-environment interactions.
+    The previous implementation of MDR was limited in its ability to 
+    analyze large datasets.  Parallel multifactor dimensionality reduction 
+    (pMDR) uses a new algorithm that can scale to handle extremely large 
+    datasets.  pMDR is implemented using the Message Passing Interface
+    (MPI) to allow for processing on multiple processors.
+
+
+2.  Example
+
+    To run the sample included, navigate into the example directory:
+
+    mpirun -np 2 ../bin/pMDR xor.cfg
+    
+    or 
+    
+    mpiexec -np 2 ../bin/pMDR xor.cfg
+    
+    
+    mpirun and mpiexec are executables included with the MPI implementation.
+    The -np option specifies the number of processors used.
+
+    To run across multiple machines, create a machinefile listing each
+    machine on a line and then run with the -machinefile option.  See
+    the MPI documentation for more information about mpirun or mpiexec.
+    
+    mpirun -np 4 -machinefile machinesfile ../bin/pMDR xor.cfg
+    
+    or 
+    
+    mpiexec -np 4 -machinefile machinesfile ../bin/pMDR xor.cfg
+    
+    
+    
+    Output:
+    
+    xor.mdr.out
+
+    
+
+3.  Input files
+
+    a.  pMDR takes a single configuration file as a command-line argument.  
+    This file should list all the parameters for controllling the analysis.
+    It takes the format of keyword <whitespace> value.  Each keyword should
+    be on its own line.  Comments can start with '//' as in C++.  Any
+    parameter without a default value is required.
+    
+    
+###########  configuration file parameters ###########
+
+Parameter        Default   Description
+---------        -------   -----------------    
+FILENAME            none   Specifies the location and name of the
+                           data input file.
+
+MAPFILE             none   Allows names to be specified for the variables
+                           in the data file.  The first column should be
+                           the chromosome number, second column the name 
+                           and third column the position of the SNP.  This
+                           file is optional and the reports will use the
+                           relative position of the SNPs in the report if
+                           it isn't provided.  In addition, the base 
+                           position (3rd column) is currently not used and
+                           can be filled with any number.
+                         
+MAXLOCIVALUE        none   Maximum value for an input variable.  The
+                           minimum is always 0.
+                        
+CALCTHRESHOLD       SET    Threshold for assigning high/low risk
+                           for a genotype during evaluation of a 
+                           model.  It is either calculated by the 
+                           overall ratio in the dataset (SET) or it
+                           can be calculated for each model (MODEL).
+                           It is faster to calculate on the SET, but
+                           may be necessary to calculate per model
+                           if there are missing genotypes in the dataset.
+
+COMBOSTART          none   Minimum number of loci making up
+                           a combination to be tested.  A '2' means
+                           2-loci models will be tested initially
+                           and larger models will be tested exhaustively
+                           until COMBOEND is reached.
+                        
+COMBOEND            none   Maximum number of loci making up
+                           a combination to be tested. A '3' means
+                           no models involving more than 3 loci
+                           will be tested.
+
+MODELBUILDINTERVAL  none   Specifies how many models will be evaluated
+                           by each process before requesting more
+                           models to evaluate.
+
+CROSSVALINTERVAL    1      Number of cross-validation intervals to
+                           perform.  Setting it to 1 means no 
+                           cross-validation will be done.
+                           
+MODELSTOKEEP        1      Number of models that will be kept per
+                           loci combination and per cross-validation.
+                           Set to 'ALL' to keep every model. WARNING:
+                           If testing many combinations this can
+                           greatly slow the analysis and create
+                           a very large output file.
+ 
+ALWAYSINCLUDED     none    Specify a SNP that will always be included
+                           in the models to be run.  Specify the SNP
+                           by name if a map file was used or specify
+                           by position number if not.
+
+RANDOMSHUFFLE      none    Values are 'ON' or 'OFF'.  When 'ON', the
+                           individuals are shuffled before splitting
+                           them to do cross-validation.  
+                           
+RANDOMSEED         none    Seeds the random number generator for the
+                           random shuffle of individuals.
+                           
+NOTRECOGNIZEDRESPONSE 1    Sets how a genotype is evaluated that is 
+                           encountered during testing but not classified
+                           during training.
+                           Values are: -1 (Unknown), 0 (Unaffected),
+                           1 (Affected)
+                           
+TIECELLVALUE          1    Sets a genotype risk when equal numbers of
+                           affected and unaffected individuals during 
+                           training.
+                           Values are: -1 (Unknown), 0 (Unaffected),
+                           1 (Affected)
+                           
+BESTPARTITION       OFF    Shows data partition for best model.
+                           Values are: OFF, ON
+                           The partitions are recorded
+                           in a partitions file.
+
+SHOWRULES           OFF    Displays rules for models.  Appears in the
+                           rules file.
+                           
+SHOWTOTALS          OFF    Displays matrix of true positives, false positives,
+                           etc. in the totals file.
+
+                           
+MISSING              -1    Sets value for missing data in dataset.
+
+POWERMODEL          OFF    Specifies whether to determine and display
+                           the best model across all combination
+                           sizes.
+                           Values are:  OFF, ON
+
+PTEST-N               0    Specifies number of permutation tests to perform
+                           to assign significance to the models.  This will
+                           increase the running time as each permutation test
+                           takes as long as the initial run of the data.
+                           
+CHECKINTERVAL         0    Set to a percentage that will record all data necessary
+                           for restarting the run from that point.  For example,
+                           setting this to 10 will result in a check point file
+                           being written every 10% of the run.
+                           
+CHECKPOINTFILE     none    Specifies location of a checkpoint file.  The analysis
+                           will continue from the point at which the checkpoint
+                           file was generated.
+
+
+                           				
+                        
+    b.  pMDR accepts data in a simple format.  Each line is a separate
+    individual.  The first column is the phenotype of the individual and
+    must be either 0 or 1.  Each additional column contains the value
+    of a variable or locus in the case of genotypic data.  These values
+    range from 0 to the MAXLOCIVALUE set in the configuration value or
+    must equal the value for missing data.
+
+    
+
+4.  Algorithm
+
+    MDR is implemented with a cross-validation framework (typically 
+    10-fold).  In step 1 of the process, the data are divided into 
+    a training set (9/10 of the data) and a testing set (1/10 of the data).  
+    Next, a set of n genetic and/or environmental factors are selected 
+    from the set of all possible factors, N.  Each individual in the 
+    training set is grouped according to its state at each of the n factors 
+    (i.e. for 2 loci with 3 possible genotypes, there are 9 possible 
+    combinations; for 3 loci, 27 etc.)  Then, each genotype combination 
+    is classified as high or low risk depending on the ratio of cases to 
+    controls with that genotype combination.  If the ratio is less than the ratio
+    of cases and controls in the dataset, the genotype combination is classified 
+    as low risk.  If the ratio is equal to or greater than the ratio of cases 
+    to controls in the dataset, the genotype combination is classified as high 
+    risk.  This collection of high and low risk groups forms the MDR model 
+    for that combination of factors, and the fitness of that model is determined 
+    by balanced accuracy, [(sensitivity+specificity)/2] .  To evaluate the 
+    predictive ability  of a model, a prediction error is calculated based 
+    on the proportion of individuals in the testing set that are incorrectly 
+    labeled by the model.  Each combination of variables (1 to k-variables) 
+    specified by the user is evaluated in this fashion, and the entire 
+    procedure is performed 10 times, using each 1/10th as a testing set and 
+    each 9/10th as a training set.
+    
+    pMDR selects the best model for each order of loci (1-locus,
+    2-locus, etc.) by calculating a cross-validation consistency (CVC).
+    CVC is the total # of occurrences for a model across the cross-validation
+    sets.  The model with the highest CVC is reported as the best model with
+    that number of loci included.  If two or more models have identical
+    CVC, then the model with the highest prediction accuracy among those is 
+    selected.
+    
+    pMDR selects the single best model across all order of loci by selecting the
+    model with the highest CVC and highest prediction accuracy.  If one model
+    has the highest CVC and the other has the highest prediction accuracy, parsimony
+    is used and the model with the fewest loci is selected.
+
+
+5.  Sample files
+
+    a. Input files
+    
+-------------------
+Configuration file:
+-------------------
+
+FILENAME 2LocusModel.XORME000.1.dat
+MAXLOCIVALUE 2
+COMBOSTART 1
+COMBOEND 2
+CALCTHRESHOLD SET
+CROSSVALINTERVAL 5
+MODELBUILDINTERVAL 1000
+MODELSTOKEEP 1
+RANDOMSHUFFLE ON
+RANDOMSEED 2
+NOTRECOGNIZEDRESPONSE -1
+TIECELLVALUE 1
+BESTPARTITION ON
+MISSING -1
+
+
+    
+---------------------------------------
+Data file (only first 18 lines shown) :
+---------------------------------------
+        
+0 1 2 0 0 1 1 1 0 1 1 2 1   
+0 2 2 1 2 0 0 1 1 1 2 1 1
+1 1 0 0 2 1 0 1 1 2 0 0 2
+1 0 1 0 0 1 1 1 2 2 2 1 2
+1 0 1 0 2 0 1 0 0 2 1 0 2
+0 1 1 1 0 2 1 2 1 2 2 1 1
+0 2 0 2 1 1 2 1 0 0 1 1 0
+0 2 0 1 1 2 2 0 1 1 2 1 1
+0 0 2 2 0 2 0 1 2 1 1 1 2
+0 1 1 0 2 1 2 0 1 0 0 2 1
+0 2 1 1 1 1 1 2 1 1 1 1 2
+0 1 1 2 0 1 1 1 1 2 1 0 1
+0 1 1 1 0 1 2 1 2 1 1 1 0
+0 2 1 1 2 2 0 2 1 1 0 1 0
+1 0 1 0 2 0 1 0 0 2 1 0 2
+0 2 0 2 1 1 2 1 0 0 1 1 0
+0 1 1 0 2 1 2 0 1 0 0 2 1
+0 2 2 1 2 0 0 1 1 1 2 1 1
+
+
+
+
+    b. Output file -- The output file lists the best models
+    for each combination size of variables for each cross-validation
+    interval.  Finally the best models for each
+    model size are selected and if POWERMODEL is ON the single
+    best model is selected.  Any p values generated by permutation
+    testing are displayed at the bottom with p values <= 0.05
+    marked with ****.
+    
+
+Fitness used: Balanced Acc
+
+------------------------Subgroup # 1 of 5-------------------------
+                                      Balanced Acc
+Loci                  Fitness     Training    Testing   Pred Error
+------------------------------------------------------------------
+rs12                  53.91       53.91       55.62     44.38
+rs10 rs3              58.12       58.12       58.75     41.25
+
+------------------------Subgroup # 2 of 5-------------------------
+                                      Balanced Acc
+Loci                  Fitness     Training    Testing   Pred Error
+------------------------------------------------------------------
+rs12                  55.00       55.00       51.25     48.75
+rs10 rs3              57.97       57.97       59.38     40.62
+
+------------------------Subgroup # 3 of 5-------------------------
+                                      Balanced Acc
+Loci                  Fitness     Training    Testing   Pred Error
+------------------------------------------------------------------
+rs6                   54.53       54.53       49.38     50.63
+rs10 rs3              59.22       59.22       54.38     45.62
+
+------------------------Subgroup # 4 of 5-------------------------
+                                      Balanced Acc
+Loci                  Fitness     Training    Testing   Pred Error
+------------------------------------------------------------------
+rs12                  55.16       55.16       50.63     49.38
+rs10 rs3              57.97       57.97       59.38     40.62
+
+------------------------Subgroup # 5 of 5-------------------------
+                                      Balanced Acc
+Loci                  Fitness     Training    Testing   Pred Error
+------------------------------------------------------------------
+rs5                   54.53       54.53       50.63     49.38
+rs10 rs3              57.97       57.97       59.38     40.62
+
+
+
+--------------- Best Models for Each Order ------------------------
+loci              Avg Pred Balanced Acc  Avg Pred Err TotalMiss CV
+-------------------------------------------------------------------
+rs12                51.50                48.50        0         3
+rs10 rs3            58.25                41.75        0         5
+
+******* Single Best Model **********
+ Model [ rs10 rs3 ]
+
+Permutation p values:
+rs12                0.372
+rs10 rs3            < 0.001***

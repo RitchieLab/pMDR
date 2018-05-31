@@ -1,0 +1,38 @@
+#!/bin/bash
+
+####### RITCHIELAB PBS TEMPLATE FILE
+#
+# Make a copy this script to use as the basis for your own script.
+#
+# Most of the available PBS options are described below, with a default
+# or example setting.  Lines starting with "##PBS" are ignored; to enable
+# them, remove the second #.
+#
+# Put your own job commands inside the marked off section near the bottom,
+# leaving the commands above and below it in place.  In order to avoid an
+# excessive IO burden on the network filesystem, it is best to copy your
+# input data to the provided ${TMPDIR}, generate any output there, and then
+# copy the final results back to the group directory.
+
+#PBS -N sample
+#PBS -M sud23@psu.edu
+#PBS -m bae
+#PBS -l nodes=2
+#PBS -l mem=1gb
+#PBS -l pmem=1gb
+#PBS -l walltime=5:00
+#PBS -j oe
+#module unload intel/2015.0.090
+#module unload pgi/15.7
+#module unload openmpi/gnu/1.6.0
+#module load openmpi/gnu/1.8.1
+echo "$0 started at $(date)"
+#echo chr=${chr}
+cd $PBS_O_WORKDIR
+
+#echo "$0 finished at $(date)"
+#mpiexec -np 2 pMDR 1_snp_100_test_np2.cfg out/parallel2
+#mpirun /gpfs/group1/m/mdr23/personal/scott/mdr/bin/pMDR 1_snp_100_test_np2.cfg out/parallel2
+mpirun pMDR 27.cfg out/27
+echo "$0 finished at $(date)"
+
