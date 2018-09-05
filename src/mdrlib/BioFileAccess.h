@@ -46,7 +46,7 @@ class BioFileAccess{
   	virtual bool Open();
   	
   	/// reads an index
-	  virtual bool GetModels(int StartIndex, std::vector<std::vector<std::string> >& models, int nModels)=0;
+	  virtual bool GetModels(int StartIndex, std::vector<std::vector<std::string> >& models, int nModels,int idlength=11)=0;
   	
   	/// Gets header length for use as an offset
   	int GetHeaderOffset();

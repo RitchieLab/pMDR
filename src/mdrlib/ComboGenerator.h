@@ -66,6 +66,8 @@ class ComboGenerator{
     
     bool param_AlreadyStarted(){return AlreadyStarted;}
     void param_AlreadyStarted(bool new_AlreadyStarted){AlreadyStarted=new_AlreadyStarted;}
+  
+    virtual void set_id_size(int s){idSize=s;}
     
     void set_dataset(Dataset* set){dataset=set;}
     
@@ -78,7 +80,7 @@ class ComboGenerator{
   protected:
     void initialize(); 
     int ComboInterval, ComboStart, ComboEnd, NumLoci;
-    int counter;
+    int counter, idSize;
     bool AlreadyStarted;
     Dataset* dataset;
     

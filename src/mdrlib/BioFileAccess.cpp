@@ -81,7 +81,6 @@ bool BioFileAccess::Open() {
         if(biofile.is_open()){
           biofile.close();
         }
-	ios_base::openmode OpenFlags =ios_base::in | ios_base::binary;
 	
 	OpenBinary();
 	isopen = biofile.is_open();

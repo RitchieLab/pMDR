@@ -54,7 +54,7 @@ class SlaveAnalysis: public Analysis{
   
     void set_rank(int rank){myrank=rank;}
     
-    void set_generator_type(string biofilename);
+    void set_generator_type(string biofilename, int idSize);
   
   private:
     int myrank, srParameters;

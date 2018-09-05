@@ -35,7 +35,7 @@ class BioBinFileAccess: public BioFileAccess{
     BioBinFileAccess(std::string Filename);
 
   	/// reads the indicated number of models starting at the index given
-	  bool GetModels(int StartIndex, std::vector<std::vector<std::string> >& models, int nModels);
+	  bool GetModels(int StartIndex, std::vector<std::vector<std::string> >& models, int nModels,int idlength=11);
   	 	
   	/// get number of records in file
 	  unsigned int GetRecordCount();

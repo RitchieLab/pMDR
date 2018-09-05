@@ -70,6 +70,7 @@ void BioComboGenerator::initialize(){
   _current_model = 0;
   _fileReader = NULL;
   _current_index = 0;
+//  idSize=11;
 }
 
 
@@ -115,7 +116,7 @@ bool BioComboGenerator::GenerateCombinations(){
   
   vector<vector<string> > model_strings;
   
-  _fileReader->GetModels(_current_index, model_strings, ComboInterval);
+  _fileReader->GetModels(_current_index, model_strings, ComboInterval, idSize);
   
   _current_index += model_strings.size();
 

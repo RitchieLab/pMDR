@@ -27,6 +27,8 @@
 #include <FileManager.h>
 #include <FlatIndex.h>
 #include <MapFileReader.h>
+#include <ModelFileReader.h>
+#include <stdio.h>
 
 using namespace std;
 using namespace mdr;
@@ -35,6 +37,8 @@ using namespace mdr;
 void stop_program(MDRExcept& me);
 void set_dataset_params(Config& config_info, Dataset& set);
 string get_basename(string configfilename);
+void send_id_size(int idSize);
+int receive_id_size();
 
 
 int main(int argc, char* argv[]){
@@ -49,7 +53,7 @@ int main(int argc, char* argv[]){
   MPI_Comm_size(MPI_COMM_WORLD, &nproc);
 
   if(myrank ==0){
-    cout << "\n\tParallel MDR LPC " << version_num << "\t08/31/16" << endl;
+    cout << "\n\tParallel MDR " << version_num << "\t06/25/18" << endl;
   }
 
   if(argc < 2){
@@ -97,11 +101,19 @@ int main(int argc, char* argv[]){
       }
       config_info.basename(base_out);
 
+  string tempModelfn=base_out + "mdrmodels.tmp.txt";
+
   // need to split here between master and slave analysis
   if(myrank ==0){ // master
     try{
 
       LogOutput log_out(base_out + ".mdr.log");
+      if(config_info.getModelFileName().length() > 0){
+        int idSize =  ModelFileReader::convert_model_file(config_info.getModelFileName(),tempModelfn);
+        config_info.set_biofilter_filename(tempModelfn);
+        send_id_size(idSize);
+        config_info.set_id_size(idSize);
+      }
       MasterAnalysis analyzer;
       
       if(config_info.getOutputAllModels()){
@@ -115,7 +127,7 @@ int main(int argc, char* argv[]){
       
      if(config_info.getOutputAllModels()){
 //    	cout << "\nReported all models to " << base_out << ".1.allmodels.txt\n\n";
-        cout << "\nLPC Reported all models to:\n";
+        cout << "\nReported all models to:\n";
         for(int i=0; i<nproc; i++){
           string fn = base_out + "." + Stringmanip::itos(i+1) + ".allmodels.txt";
           cout << fn << "\n";
@@ -163,6 +175,10 @@ int main(int argc, char* argv[]){
           analyzer.output_lr_p_values(best_models, set, config_info.num_ptests());
         }
       }
+   // delete temporary model file
+       if(config_info.getModelFileName().length() > 0){
+             remove(tempModelfn.c_str());
+        }
       cout << endl;
     }
     catch(MDRExcept& me){
@@ -171,6 +187,12 @@ int main(int argc, char* argv[]){
     }
   }
   else{ //slave
+
+    if(config_info.getModelFileName().length() > 0){
+        config_info.set_biofilter_filename(tempModelfn);
+        int idSize=receive_id_size();
+        config_info.set_id_size(idSize);
+    }
 
     SlaveAnalysis analyzer;
 
@@ -213,6 +235,23 @@ void stop_program(MDRExcept& me){
   MPI_Finalize();
   cout << me.get_error() << endl;
 }
+
+///
+/// Send model file ID size
+///
+void send_id_size(int idSize){
+  MPI_Bcast(&idSize, 1, MPI_INT, 0, MPI_COMM_WORLD);
+}
+
+///
+/// Receive model file ID size
+///
+int receive_id_size(){
+  int idSize;
+  MPI_Bcast(&idSize, 1, MPI_INT, 0, MPI_COMM_WORLD);
+  return idSize;
+}
+
 
 ///
 /// Sets parameters in dataset

@@ -50,7 +50,7 @@ class MasterAnalysis: public Analysis{
  
     void send_continue_signal();
     
-    void set_generator_type(string biofilename);
+    void set_generator_type(string biofilename, int idSize);
  
   private:
 

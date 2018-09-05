@@ -70,6 +70,7 @@ void ConfigFileReader::initialize(){
   key_map["INPUTFORMAT"] = InputFormat;
   key_map["BIOFILTERNAME"] = BioFileName;
   key_map["OUTPUTALL"] = OutputAllModels;
+  key_map["MODELFILE"] = ModelFileName;
 
   fitness_map["ERROR"] = Error;
   fitness_map["ODDSRATIO"] = OddsRatio;
@@ -119,7 +120,7 @@ Config ConfigFileReader::read_config(string configfilename){
     // get value by taking the rest of the line
     if(key_map[keyword] != Filename && key_map[keyword] != Mapfilename
       && key_map[keyword] != AlwaysIncluded && key_map[keyword] != ForceLoci &&
-      key_map[keyword] != Checkpointfile && key_map[keyword] != BioFileName)
+      key_map[keyword] != Checkpointfile && key_map[keyword] != BioFileName && key_map[keyword] != ModelFileName)
       value = to_upper(value);
     add_keyword(keyword, value, config);
   }
@@ -258,6 +259,9 @@ void ConfigFileReader::add_keyword(string keyword, string value, Config& config)
       break;
     case BioFileName:
       config.set_biofilter_filename(value);
+      break;
+    case ModelFileName:
+      config.setModelFileName(value);
       break;
     case OutputAllModels:
     	config.setOutputAllModels(on_or_off(value));

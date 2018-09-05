@@ -41,6 +41,7 @@ void ComboGenerator::initialize(){
   NumLoci = 0;
   ComboStart=0;
   ComboEnd=0;
+  idSize=11;
 }
 
 

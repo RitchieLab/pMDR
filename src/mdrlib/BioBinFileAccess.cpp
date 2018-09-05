@@ -42,7 +42,7 @@ unsigned int BioBinFileAccess::GetRecordCount(){
 /// @return False when end of file reached
 ///
 bool BioBinFileAccess::GetModels(int StartIndex, vector<vector<string> >& models, 
-  int nModels){
+  int nModels, int idlength){
   
   // size of these are 11 for each model and then the implication index is 7 characters long
   // followed by a return character

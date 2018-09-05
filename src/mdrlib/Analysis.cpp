@@ -54,12 +54,13 @@ if(generator != NULL) delete generator;
 /// is passed for biofilter
 /// @param biofilename string
 ///
-void Analysis::set_generator_type(string biofilename){
+void Analysis::set_generator_type(string biofilename, int idSize){
   if(biofilename.empty()){
     generator = new KnuthComboGenerator();
   }
   else{
     generator = new BioComboGenerator();
+    generator->set_id_size(idSize);
     map<string, string> temp_map;
     temp_map["BIOFILENAME"] = biofilename;
     generator->PassInitConfig(temp_map);
@@ -430,7 +431,7 @@ double Analysis::read_checkpoint(string checkpointfile){
 }
 
 
-///\
+///
 /// Produces checkpoint file
 /// @param
 /// @throws MDRExcept when can't write checkpoint

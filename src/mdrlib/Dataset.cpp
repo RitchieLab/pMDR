@@ -156,14 +156,11 @@ void Dataset::permute_set(int seed){
     indIndex[i] = i;
   }
 
-  int tempInt;
-
   // randomly select individuals to be affected
   for(int i=0; i<numaffected; i++){
     int numIndsLeft = num_inds-i;
     affIndex = rand() % numIndsLeft;
     data[indIndex[affIndex]][0]=1;
-    tempInt = indIndex[affIndex];
     indIndex[affIndex] = indIndex[numIndsLeft-1];
     indIndex[numIndsLeft-1] = indIndex[affIndex];
   }

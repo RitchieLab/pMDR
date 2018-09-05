@@ -29,7 +29,7 @@
 ///
 void sAnalysis::train_models(Dataset& set, Config& config, LogOutput& log_out, bool log_all){
   
-  set_generator_type(config.get_biofilter_filename());
+  set_generator_type(config.get_biofilter_filename(), config.get_id_size());
   set_parameters(config, set, log_all);
   train_models(set, log_out);
 }
@@ -79,7 +79,6 @@ void sAnalysis::train_models(Dataset& set, LogOutput& log_out){
   }
 
 
-// cout << "check_interval=" << check_interval << endl;
   // establish a checkpoint interval if needed
   if(check_interval > 0){
     // checkpoints are indicated as a percentage of the 
@@ -109,7 +108,6 @@ void sAnalysis::train_models(Dataset& set, LogOutput& log_out){
       add_included_snps(generator->ComboList);
 
     num_combos = generator->ComboList.size();
-//cout << "num_combos=" << num_combos << endl;
     for(curr_combo=0; curr_combo < num_combos; curr_combo++){
       test_single_model(generator->ComboList[curr_combo], models, set, output_all);
       if(output_all)
@@ -131,7 +129,6 @@ void sAnalysis::train_models(Dataset& set, LogOutput& log_out){
       write_checkpoint(curr_check_interval, basecheckpoint, completed_mods);
       while(nextCheck < completed_mods)
         nextCheck += checkModels;
-// cout << "called write_checkpoint nextCheck=" << nextCheck << endl;
     }
     
   }while(!combos_done);

@@ -23,6 +23,8 @@
 #include <FileManager.h>
 #include <FlatIndex.h>
 #include <MapFileReader.h>
+#include <ModelFileReader.h>
+#include <stdio.h>
 
 using namespace std;
 using namespace mdr;
@@ -34,7 +36,7 @@ void version(string version_date, string version_num);
 
 int main(int argc, char* argv[]){
 
-  string version_date = "08/31/16";
+  string version_date = "06/26/18";
   string version_num = "1.0.1";
 
   version(version_date, version_num);
@@ -60,14 +62,9 @@ int main(int argc, char* argv[]){
     set.set_missing_value(config_info.missing_data_value());
     set.set_random_shuffle(config_info.shuffle_data());
     set.set_shuffle_seed(config_info.random_seed());
-//  cout << "Setting threshold for calculating each as " << config_info.calc_threshold_each_model() << endl;
     set.set_permodelthreshold(config_info.calc_threshold_each_model());
 
-//     DatafileReader data_reader;
-//     data_reader.read_datafile(config_info.datafile(), set);
-
     FileManager file_reader;
-//cout << "parse input file" << endl;
     file_reader.parse_input_file(config_info.datafile(), set, config_info.input_format());
     set.initialize_converter(config_info.model_size_start(), config_info.model_size_end());
 
@@ -78,7 +75,6 @@ int main(int argc, char* argv[]){
     else{
       set.reference_snp_names();
     }
-//cout << "read map" << endl;
 
 //     if(set.any_missing_data())
 //       FlatIndex::set_genos_per_locus(set.get_max_locus_value()+2);
@@ -115,8 +111,16 @@ int main(int argc, char* argv[]){
     config_info.basename(base_out);
     LogOutput log_out(base_out + ".mdr.log");
 
+    string tempModelfn=base_out + "mdrmodels.tmp.txt";
+
+    // convert model file for use in sMDR
+    if(config_info.getModelFileName().length() > 0){
+      int idSize =  ModelFileReader::convert_model_file(config_info.getModelFileName(),tempModelfn);
+      config_info.set_biofilter_filename(tempModelfn);
+      config_info.set_id_size(idSize);
+    }
+
     sAnalysis analyzer;
-//     analyzer.set_forced_loci(config_info.force_loci_included());
 
     cout << "\n\tAnalyzing models...";
     cout.flush();
@@ -180,6 +184,11 @@ int main(int argc, char* argv[]){
       if(config_info.regress_test()){
         analyzer.output_lr_p_values(best_models, set, config_info.num_ptests());
       }
+    }
+
+   // delete temporary model file
+   if(config_info.getModelFileName().length() > 0){
+      remove(tempModelfn.c_str());
     }
 
   }catch(MDRExcept ex){

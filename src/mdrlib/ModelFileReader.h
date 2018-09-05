@@ -1,6 +1,6 @@
-//BioTextFileAccess.h
+//ModelFileReader.h
 
-//     Copyright 2008 Marylyn Ritchie
+//     Copyright 2018 Marylyn Ritchie
 
 //     This file is part of MDR.
 // 
@@ -17,37 +17,30 @@
 //     You should have received a copy of the GNU General Public License
 //     along with MDR.  If not, see <http://www.gnu.org/licenses/>.
 
-#ifndef __BIOTEXTFILEACCESS_H__
-#define __BIOTEXTFILEACCESS_H__
+#ifndef __MODELFILEREADER_H__
+#define __MODELFILEREADER_H__
 
-#include "BioFileAccess.h"
+#include "MDRExcept.h"
+#include <iostream>
+#include <sstream>
+#include <fstream>
+
 
 namespace mdr{
 
-class BioTextFileAccess:public BioFileAccess{
+class ModelFileReader{
 
   public:
-  
-    /// constructor
-    BioTextFileAccess();
-  
-    /// constructor
-    BioTextFileAccess(std::string Filename);
 
-  	/// reads the indicated number of models starting at the index given
-	  bool GetModels(int StartIndex, std::vector<std::vector<std::string> >& models, int nModels, int idlength=11);
-  	 	
-  	/// get number of records in file
-	  unsigned int GetRecordCount();
-	  
-	  /// Return length of header for this file
-	  int GetHeaderOffset();
-	  
-	  /// Opens file
-	  bool Open();
-	  
+    /// returns size of strings used in file
+    static int convert_model_file(std::string modelfile, std::string newbiofilename);
+  
+  private:
+  
 };
+
 
 }
 
 #endif
+

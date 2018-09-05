@@ -18,6 +18,7 @@
 //     along with MDR.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "DatafileReader.h"
+#include "Stringmanip.h"
 
 namespace mdr{
 
@@ -54,6 +55,7 @@ void DatafileReader::fill_set(string datafile, Dataset& set){
   infile.open(datafile.c_str());
   
   int affectedTotal=0, unaffectedTotal=0;
+  string read_as_string;
   
   // Read the data from the file into the data array
   for(int i = 0; i < num_inds; i++){
@@ -65,6 +67,17 @@ void DatafileReader::fill_set(string datafile, Dataset& set){
     }
   
     infile >> read_as_int;
+//    infile >> read_as_string;
+//    if(read_as_string.compare("NA")==0 || read_as_string.compare("na")==0 || read_as_string.compare("Na")==0){
+    if(read_as_int == missing_value){
+      // skip this line
+      getline(infile, read_as_string);
+      i--;
+      continue;
+    }
+//    else{
+//       read_as_int=Stringmanip::stoi(read_as_string);
+//    }
     set.data[i][0] = read_as_int;
     if(set.data[i][0] == 1){
       affectedTotal++;
@@ -85,7 +98,7 @@ void DatafileReader::fill_set(string datafile, Dataset& set){
         ostringstream maxLoc, missVal;
         maxLoc << max_locus_value;
         missVal << missing_value;
-        throw MDRExcept("All genotypes must be between 0 and the MAXLOCUSVALUE (" + 
+        throw MDRExcept("Value found was " + Stringmanip::itos(read_as_int) + ". All genotypes must be between 0 and the MAXLOCUSVALUE (" + 
           maxLoc.str() + ") or equal to the value of MISSING parameter (" +
           missVal.str() + ")");
       }
@@ -129,6 +142,7 @@ void DatafileReader::count_total(string datafile, Dataset& set){
   getline(datastream, line);
   int colcount=0;
   string out;
+  int pheno;
 
   string::size_type lastNumberPos = line.find_last_of("0123456789");
 
@@ -149,7 +163,16 @@ void DatafileReader::count_total(string datafile, Dataset& set){
     }
     stringstream subss(line);
     subss >> out;
-    if((out[0] != '0' and out[0] != '1') or out.length() > 1){
+    pheno = Stringmanip::stoi(out);
+//    if(out.compare("NA")==0 || out.compare("na")==0 || out.compare("Na")==0){
+    if(pheno == set.get_missing_value()){
+      linecount--;
+    }
+   if(pheno == set.get_missing_value()){
+      linecount--;
+    }
+    else if((out[0] != '0' and out[0] != '1') or out.length() > 1){
+//    if((out[0] != '0' and out[0] != '1') or out.length() > 1){
       ids_included = true;
     }
     getline(datastream, line);

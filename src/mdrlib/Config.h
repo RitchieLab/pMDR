@@ -136,19 +136,25 @@ class Config{
     void setOutputAllModels(bool tf){flush_models=tf;}
     bool getOutputAllModels(){return flush_models;}
 
+    void setModelFileName(string fn){modelfn=fn;}
+    string getModelFileName(){return modelfn;}
+
+    void set_id_size(int s){idSize=s;}
+    int get_id_size(){return idSize;}
+
     void check_parameters();
 
   private:
     void initialize();
 
     string datafilename, mapfilename, checkpointfilename, basefilename, input_format_string,
-      biofilename;
+      biofilename, modelfn;
 
     bool calc_threshold, bestpartition, show_rules, show_totals, random_shuffle, col_headers,
       power_model, showcombo_misclass, regress_test_on, flush_models;
 
     int combo_start, combo_end, crossval_interval, modelbuild_interval, randomseed, models_kept,
-      notrecognized_response, tiecell_value, ptests, ptests_done, missing_value, max_locus_value;
+      notrecognized_response, tiecell_value, ptests, ptests_done, missing_value, max_locus_value, idSize;
 
     float checkpoint_interval, balaccthresh;
 

@@ -136,11 +136,9 @@ void LogistReg::initialize_summary(unsigned int currModelSize, bool include_full
 void LogistReg::zero_summary(unsigned int array_size, unsigned int model_size, bool include_full_interaction){
 
   unsigned int product=1;
-  unsigned int number_of_non_interaction;
   
   for(unsigned int sub_array_index=0; sub_array_index < array_size; sub_array_index++){ 
     summary_data[sub_array_index] = indexConverter.decode_index(sub_array_index, model_size);
-    number_of_non_interaction = summary_data[sub_array_index].size();
   
     // this version can handle any size model
     if(summary_data[sub_array_index].size() > 1 && interaction_included){
@@ -312,7 +310,7 @@ vector<int> includedCells = includedIndexes[numLoci];
     Par[j] = 0;
   }
   
-  double LnV=0,Ln1mV=0, LLn=0;
+  double LnV=0,Ln1mV=0;
   double LLp = 2e+10;
   double LL = 1e+10;
   unsigned int numIterations = 0;  
@@ -357,7 +355,7 @@ vector<int> includedCells = includedIndexes[numLoci];
       }
     }	    
 	  
-    if( LLp==1e+10 ) { LLn = LL;}
+//    if( LLp==1e+10 ) { LLn = LL;}
 	  
     for (j = 1; j<=nR; j++) {
       for (k=0; k<j; k++) {

@@ -18,6 +18,8 @@
 //     along with MDR.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "MDR.h"
+#include "stdlib.h"
+
 
 namespace mdr{
 
@@ -235,6 +237,7 @@ void MDR::test_model_complete(vector<Model>& models, Dataset& set){
 void MDR::test_model(Model& curr_model, Dataset& set, int current_cv){
   check_included(set);
 
+
   if(last_model_size != curr_model.combination.size()){
     int array_size = set.converter().get_size_array(curr_model.combination.size());
     last_model_size = curr_model.combination.size();
@@ -249,7 +252,7 @@ void MDR::test_model(Model& curr_model, Dataset& set, int current_cv){
   // store the totals across all crossvalidation intervals
   fill_cv_totals(totals, set, curr_model.combination);
   curr_model.set_threshold(set.determine_threshold(curr_model.combination));
-  
+
   if(total_cv > 1){
     set_cv_totals(totals, cv_totals, current_cv, total_cv);
     // fill training
@@ -268,6 +271,7 @@ void MDR::test_model(Model& curr_model, Dataset& set, int current_cv){
       curr_model.training, curr_model);
     
   }
+
 
   curr_model.training.totalmissing = set.get_training_crossval_total(current_cv) - (curr_model.training.classhigh + curr_model.training.classlow
       + curr_model.training.misclasshigh + curr_model.training.misclasslow);
@@ -433,6 +437,7 @@ void MDR::calculate_err(vector<vector<int> >& thresh_totals,
         stats.classlow += totals[0][includedCells[currCell]];
         stats.misclasslow += totals[1][includedCells[currCell]];
       }
+exit(1);
       continue; //skip to next cell
     }
    

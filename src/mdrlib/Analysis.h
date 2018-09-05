@@ -65,7 +65,7 @@ class Analysis{
     void log_all_training(bool log_option){log_training = log_option;}
     bool log_all_training(){return log_training;}
 
-    void set_generator_type(string biofilename);
+    void set_generator_type(string biofilename, int idSize);
     
     void set_flushfn(string fn){flush_fn=fn;output_all=true;}
 

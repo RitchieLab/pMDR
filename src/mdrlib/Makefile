@@ -20,7 +20,7 @@ OBJS = ComboGenerator.o ConfigFileReader.o Config.o DatafileReader.o \
 	LogOutput.o Analysis.o Checkpoint.o StatCreator.o LRInteract.o \
 	LogistReg.o FileManager.o BinDataFileReader.o Stringmanip.o \
 	BioComboGenerator.o KnuthComboGenerator.o BioTextFileAccess.o \
-	BioBinFileAccess.o BioFileAccess.o AllModelOutput.o
+	BioBinFileAccess.o BioFileAccess.o AllModelOutput.o ModelFileReader.o
 
 INTERFACES = ComboGenerator.h ConfigFileReader.h Config.h DatafileReader.h \
 	Dataset.h FlatIndex.h FormattedOutput.h MapFileReader.h \
@@ -31,7 +31,7 @@ INTERFACES = ComboGenerator.h ConfigFileReader.h Config.h DatafileReader.h \
 	StatCreator.h LRInteract.h LogistReg.h FileReader.h \
 	FileManager.h BinDataFileReader.h Stringmanip.h BioComboGenerator.h \
 	KnuthComboGenerator.h BioFileAccess.h BioTextFileAccess.h \
-	BioBinFileAccess.h AllModelOutput.h
+	BioBinFileAccess.h AllModelOutput.h ModelFileReader.h
 
 # GNU compiler flags (works with g++ and egcs)
 CC          = g++

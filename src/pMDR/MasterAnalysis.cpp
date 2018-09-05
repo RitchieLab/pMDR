@@ -27,7 +27,7 @@
 void MasterAnalysis::run_master_analysis(Dataset& set, Config& config, int nproc,
   LogOutput& log_out, bool log_all){
 
-  set_generator_type(config.get_biofilter_filename());
+  set_generator_type(config.get_biofilter_filename(), config.get_id_size());
 
   set_parameters(config, set, log_all);
 
@@ -170,6 +170,7 @@ void MasterAnalysis::run_master_analysis(Dataset& set, Config& config, int nproc
           add_included_snps(generator->ComboList);
 
         num_combos = generator->ComboList.size();
+//cout << "master working on " << num_combos << endl;
         for(curr_combo=0; curr_combo < num_combos; curr_combo++){
           test_single_model(generator->ComboList[curr_combo], models, set, output_all);
           if(output_all)
@@ -218,7 +219,7 @@ void MasterAnalysis::run_master_analysis(Dataset& set, Config& config, int nproc
 /// is passed for biofilter.
 /// @param biofilename string
 ///
-void MasterAnalysis::set_generator_type(string biofilename){
+void MasterAnalysis::set_generator_type(string biofilename, int idSize){
   if(biofilename.empty()){
     pKnuthComboGenerator *kgen = new pKnuthComboGenerator();
     generator = kgen;
@@ -227,6 +228,7 @@ void MasterAnalysis::set_generator_type(string biofilename){
   else{
     pBioComboGenerator *bgen = new pBioComboGenerator();
     generator = bgen;
+    generator->set_id_size(idSize);
     paramMover = bgen;
     map<string, string> temp_map;
     temp_map["BIOFILENAME"] = biofilename;

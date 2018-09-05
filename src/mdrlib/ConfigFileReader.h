@@ -93,7 +93,8 @@ class ConfigFileReader{
       InputFormat,
       BioFileName,
       BalAccThreshold,
-      OutputAllModels
+      OutputAllModels,
+      ModelFileName
     };
 
 

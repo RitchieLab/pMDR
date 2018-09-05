@@ -31,7 +31,7 @@ SlaveAnalysis::~SlaveAnalysis(){
 ///
 void SlaveAnalysis::run_slave_analysis(Dataset& set, Config& config){
 
-  set_generator_type(config.get_biofilter_filename());
+  set_generator_type(config.get_biofilter_filename(), config.get_id_size());
   set_parameters(config, set, false);
 
   bool done = false;
@@ -58,6 +58,7 @@ void SlaveAnalysis::run_slave_analysis(Dataset& set, Config& config){
       if(always_included.size() > 0)
         add_included_snps(generator->ComboList);
       num_combos = generator->ComboList.size();
+//cout << "slave got " << num_combos << " from generator" << endl;
       for(curr_combo=0; curr_combo < num_combos; curr_combo++){
     	 test_single_model(generator->ComboList[curr_combo], models, set, output_all);
          if(output_all){
@@ -90,7 +91,7 @@ void SlaveAnalysis::run_slave_analysis(Dataset& set, Config& config){
 /// is passed for biofilter.
 /// @param biofilename string
 ///
-void SlaveAnalysis::set_generator_type(string biofilename){
+void SlaveAnalysis::set_generator_type(string biofilename, int idSize){
   if(biofilename.empty()){
     pKnuthComboGenerator *kgen = new pKnuthComboGenerator();
     generator = kgen;
@@ -99,6 +100,7 @@ void SlaveAnalysis::set_generator_type(string biofilename){
   else{
     pBioComboGenerator *bgen = new pBioComboGenerator();
     generator = bgen;
+    generator->set_id_size(idSize);
     paramMover = bgen;
     map<string, string> temp_map;
     temp_map["BIOFILENAME"] = biofilename;

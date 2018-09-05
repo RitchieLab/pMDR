@@ -51,9 +51,12 @@ class BioComboGenerator:public ComboGenerator{
     /// Writes checkpoint information from generator
     virtual void WriteCheckpoint(ofstream& outstream);  
 
+    //virtual void set_id_size(int s){idSize=s;}
+
   protected:
     void FreeMemory();
     void initialize();
+//    int idSize;
     BioFileAccess* _fileReader;
     double _current_model;
     unsigned int _current_index, _total_models_in_file;
