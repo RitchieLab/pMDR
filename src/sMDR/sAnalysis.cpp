@@ -86,11 +86,8 @@ void sAnalysis::train_models(Dataset& set, LogOutput& log_out){
     checkModels = total_mods * (check_interval/100);
     nextCheck = checkModels + completed_mods;
   }
-// cout << "nextCheck=" << nextCheck << endl;
-// cout << "completed_mods=" << completed_mods << endl;
 
   bool combos_done;
-// 
 
   if(output_all)
 	  out_writer.open_all_out(flush_fn, total_cv);

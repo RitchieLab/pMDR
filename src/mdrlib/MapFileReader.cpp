@@ -18,6 +18,7 @@
 //     along with MDR.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "MapFileReader.h"
+#include "Stringmanip.h"
 
 namespace mdr{
 
@@ -33,6 +34,7 @@ void MapFileReader::parse_map_file(string mapfile, Dataset& set){
   string snpID;
   string chrom;
   unsigned int pos;
+  int var_count=0;
 
   while(!mapStream.eof()){
     getline(mapStream, line);
@@ -47,8 +49,13 @@ void MapFileReader::parse_map_file(string mapfile, Dataset& set){
     set.add_snp_name(snpID);
     set.add_chrom(chrom);
     set.add_pos(pos);
+    var_count++;
   }
   mapStream.close();
+  if(var_count != set.get_num_loci()){
+    throw MDRExcept("ERROR: " + Stringmanip::itos(var_count) + " variables in " + mapfile + 
+      " doesn't match number of variables in dataset file (" + Stringmanip::itos(set.get_num_loci()) + ")\n");
+  }
 
 }
 

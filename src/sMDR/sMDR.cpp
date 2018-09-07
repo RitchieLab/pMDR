@@ -36,7 +36,7 @@ void version(string version_date, string version_num);
 
 int main(int argc, char* argv[]){
 
-  string version_date = "06/26/18";
+  string version_date = "09/07/18";
   string version_num = "1.0.1";
 
   version(version_date, version_num);
@@ -167,17 +167,12 @@ int main(int argc, char* argv[]){
           value = best_models[i].training.balanced_error;
         else
           value = best_models[i].get_balpredavg();
-// cout << "value=" << value << endl;
 
         best_models[i].set_pvalue(perms.get_p_value(value));
 
         if(config_info.regress_test()){
-//           lr_calc.calculate_lr_stat(set, best_models[i]);
           best_models[i].set_lr_pvalue(perms.get_lr_p_value(best_models[i].get_interact_llr()));
         }
-
-
-// cout << best_models[i].get_pvalue() << endl;
 
       }
       analyzer.output_p_values(best_models, set, config_info.num_ptests());

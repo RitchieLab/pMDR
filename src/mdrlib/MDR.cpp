@@ -437,7 +437,6 @@ void MDR::calculate_err(vector<vector<int> >& thresh_totals,
         stats.classlow += totals[0][includedCells[currCell]];
         stats.misclasslow += totals[1][includedCells[currCell]];
       }
-exit(1);
       continue; //skip to next cell
     }
    
