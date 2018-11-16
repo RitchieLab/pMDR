@@ -52,6 +52,8 @@ class FormattedOutput{
     
     void output_p_values(ostream& os, vector<Model>& models, Dataset& set, int p_tests);
     
+    void output_p_values(ostream& os, vector<vector<Model> >& models, Dataset& set, int p_tests);
+    
     void output_lr_p_values(ostream& os, vector<Model>& models, Dataset& set, int p_tests);
     
   private:

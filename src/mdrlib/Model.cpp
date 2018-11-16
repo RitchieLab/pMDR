@@ -18,6 +18,7 @@
 //     along with MDR.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "Model.h"
+#include <iostream>
 
 namespace mdr{
 
@@ -57,7 +58,7 @@ void Model::reset_stats(){
 /// @param vector_size 
 /// @return
 ///
-void Model::resize_cell_status_vector(int vector_size){
+void Model::resize_cell_status_vector(unsigned int vector_size){
   cell_status.assign(vector_size, -1);
 }
 

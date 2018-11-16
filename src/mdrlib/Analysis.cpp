@@ -21,6 +21,7 @@
 #include "KnuthComboGenerator.h"
 #include "BioComboGenerator.h"
 #include <map>
+#include <algorithm>  
 
 namespace mdr{
 
@@ -333,6 +334,105 @@ vector<Model> Analysis::get_best_models(Dataset& set, Config& config){
 
 
 ///
+/// Returns best model for each order based on cross-validation
+/// consistency.  Ties are broken with average prediction error
+/// for the models that tie
+/// @param set Dataset
+/// @param config Config
+///
+void Analysis::get_pval_models(Dataset& set, Config& config, 
+	vector<vector<Model > >& pvalmodels){
+
+  ModelTreeNode* best_node;
+  int model_size_start = config.model_size_start();
+  int model_size_end = config.model_size_end();
+  int curr_size=0;
+  vector<unsigned int> best_combo;
+  
+  vector<Model> tmpModels;
+  pvalmodels.assign(model_size_end+1, tmpModels);
+
+  Model curr_model;
+  map<vector<unsigned int>, Model>::iterator map_iter;
+
+  Stat* calculator = mdr.get_calculator();
+
+  // for each model order determine best model
+  // only look at best models in each tree when calculating
+  for(int curr_size = model_size_start; curr_size <= model_size_end; curr_size++){
+	unsigned int models_kept = training_results.result_trees[0][curr_size]->GetCount();
+    curr_model.resize_cell_status_vector(set.converter().get_size_array(curr_size));
+
+    map<vector<unsigned int>, Model> model_map;
+    map<vector<unsigned int>, int> cvc_count;
+
+	vector<float> avgbalerror(training_results.result_trees[0][curr_size]->GetCount(), 0.0);
+	vector<float> avgerror(training_results.result_trees[0][curr_size]->GetCount(), 0.0);
+
+	unsigned int modrank=0;
+	// need a vector of bal error totals for each position 
+	// need a vector of models so that you can use the bal error average to set model worth for position
+	for(unsigned int curr_cv=0; curr_cv < total_cv; curr_cv++){
+		modrank=0;
+		for(best_node=training_results.result_trees[curr_cv][curr_size]->GetLast(); best_node != NULL;
+			best_node=best_node->GetPrev()){
+    	  curr_model.reset_stats();
+	      curr_model.combination = best_node->GetData();
+	      mdr.test_model(curr_model, set, curr_cv);	
+      	  if(model_map.find(curr_model.combination) == model_map.end()){
+		        curr_model.set_cvc(1);
+    	    curr_model.set_predictavg(curr_model.testing.error);
+        	curr_model.set_balpredavg(curr_model.testing.balanced_error);
+	        model_map[curr_model.combination] = curr_model;
+	        cvc_count[curr_model.combination] = 1;
+    	  }	      
+    	  else{
+	        model_map[curr_model.combination].set_cvc(1 + model_map[curr_model.combination].get_cvc());
+	        model_map[curr_model.combination].set_predictavg(curr_model.testing.error +
+           	model_map[curr_model.combination].get_predictavg());
+    	    model_map[curr_model.combination].set_balpredavg(curr_model.testing.balanced_error +
+          	model_map[curr_model.combination].get_balpredavg());
+          	cvc_count[curr_model.combination]++;  	
+    	  }
+    	  
+    	  avgbalerror[modrank] += calculator->convert_to_display(curr_model.testing.balanced_error);
+    	  avgerror[modrank] +=  curr_model.testing.error;
+      		modrank++;
+		}
+		
+	}
+
+
+    for(map_iter=model_map.begin(); map_iter != model_map.end(); ++map_iter){
+    	pvalmodels[curr_size].push_back(map_iter->second);
+    	pvalmodels[curr_size].back().set_balpredavg(pvalmodels[curr_size].back().get_balpredavg() /
+    		cvc_count[pvalmodels[curr_size].back().combination]);
+    	pvalmodels[curr_size].back().set_predictavg(pvalmodels[curr_size].back().get_predictavg() /
+    		cvc_count[pvalmodels[curr_size].back().combination]);
+    } 
+    
+    std::sort(pvalmodels[curr_size].begin(), pvalmodels[curr_size].end(),sortModelsByCVC);
+    
+    // need to limit this calculation to the number of MODELSTOKEEP listed in config
+	// so that we can calculate the balanced accuracy correctly
+    // vector at this size now holds the ordered list of models
+    // update values in the vector
+
+
+    for(unsigned int i=0; i < models_kept; i++){
+    	pvalmodels[curr_size][i].set_totalmissdata(pvalmodels[curr_size][i].training.totalmissing + 
+    		pvalmodels[curr_size][i].testing.totalmissing);
+    	pvalmodels[curr_size][i].set_balpredavg(calculator->convert_to_display(avgbalerror[i]/total_cv));
+    	pvalmodels[curr_size][i].set_predictavg(avgerror[i]/total_cv);
+    }
+    if(pvalmodels[curr_size].size() > models_kept)
+	    pvalmodels[curr_size].erase(pvalmodels[curr_size].begin()+models_kept, pvalmodels[curr_size].end());
+  }
+
+}
+
+
+///
 /// Outputs best models for each size
 /// @param best_models Model
 /// @param set Dataset
@@ -408,6 +508,19 @@ void Analysis::output_p_values(vector<Model>& models, Dataset& set, int p_tests)
   out_writer.output_pvalues(models, set, p_tests);
 }
 
+
+///
+///
+/// Output p values with multiple models for each size
+/// @param models
+/// @param set
+/// @param p_tests
+///
+void Analysis::output_p_values(vector<vector<Model> >& models, Dataset& set, int p_tests){
+  out_writer.output_pvalues(models, set, p_tests);
+}
+
+
 ///
 /// Output LR p values
 /// @param models
@@ -457,5 +570,9 @@ void Analysis::output_all_models(vector<Model>& models,std::vector<unsigned int>
 	// clear to save memory
 // 	training_results.clear();
 }
-
+bool sortModelsByCVC(mdr::Model& left, mdr::Model& right){
+	if(left.get_cvc() != right.get_cvc())
+    	return left.get_cvc() > right.get_cvc();
+    return left.get_balpredavg() < right.get_balpredavg();
+}
 }

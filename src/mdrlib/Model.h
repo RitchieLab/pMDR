@@ -51,7 +51,7 @@ class Model{
     vector<unsigned int> combination;
     
     void reset_stats();
-    void resize_cell_status_vector(int vector_size);
+    void resize_cell_status_vector(unsigned int vector_size);
     
     
     void set_train_stats(model_stats& stats){training=stats;}

@@ -64,6 +64,8 @@ class OutputWriter{
     
     void output_pvalues(vector<Model>& best_models, Dataset& set, int p_tests);
     
+    void output_pvalues(vector<vector<Model> >& best_models, Dataset& set, int p_tests);
+    
     void output_lr_pvalues(vector<Model>& best_models, Dataset& set, int p_tests);
     
     void output_all_models();
