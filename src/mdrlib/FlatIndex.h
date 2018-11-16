@@ -45,7 +45,7 @@ class FlatIndex{
 
     int get_genos_per_locus(){return num_genos_per_locus;}
 
-    int get_size_array(int numLoci);
+    unsigned int get_size_array(int numLoci);
 
     vector<int> & get_valid_indexes(int numLoci){return includedIndexes[numLoci];}
 

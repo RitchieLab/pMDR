@@ -154,23 +154,29 @@ int main(int argc, char* argv[]){
       if(config_info.num_ptests() >= 1){
         cout << "Performing permutation tests...";
         cout.flush();
+        
+        vector<vector<Model> > pvalmodels;
+      	analyzer.get_pval_models(set, config_info, pvalmodels);
+        
         ParallelPerm perms;
         perms.run_master_permutations(config_info.num_ptests(), set, config_info, nproc, log_out);
 
         float value;
         // assign p values
         for(unsigned int i=config_info.model_size_start(); i<best_models.size(); i++){
-          if(config_info.num_crossval() == 1)
-            value = best_models[i].training.balanced_error;
-          else
-            value = best_models[i].get_balpredavg();
-          best_models[i].set_pvalue(perms.get_p_value(value));
+        	for(unsigned int j=0; j<pvalmodels[i].size(); j++){
+	          if(config_info.num_crossval() == 1)
+    	        value=pvalmodels[i][j].training.balanced_error;
+        	  else
+            	value=pvalmodels[i][j].get_balpredavg();
+	          pvalmodels[i][j].set_pvalue(perms.get_p_value(value));
 
-          if(config_info.regress_test()){
-            best_models[i].set_lr_pvalue(perms.get_lr_p_value(best_models[i].get_interact_llr()));
+          	if(config_info.regress_test()){
+            	pvalmodels[i][j].set_lr_pvalue(perms.get_lr_p_value(best_models[i].get_interact_llr()));
+          	}
           }
         }
-        analyzer.output_p_values(best_models, set, config_info.num_ptests());
+        analyzer.output_p_values(pvalmodels, set, config_info.num_ptests());
         if(config_info.regress_test()){
           analyzer.output_lr_p_values(best_models, set, config_info.num_ptests());
         }

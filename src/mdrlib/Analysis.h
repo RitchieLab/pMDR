@@ -43,6 +43,8 @@ class Analysis{
     virtual ~Analysis();
 
     vector<Model> get_best_models(Dataset& set, Config& config);
+    
+    void get_pval_models(Dataset& set, Config& config, vector<vector<Model > >& pvalmodels);
 
     void set_max_models(int max_training_models){max_train=max_training_models;}
 
@@ -57,6 +59,8 @@ class Analysis{
     void output_single_best(Model& best_model, Dataset& set);
 
     void output_p_values(vector<Model>& models, Dataset& set, int p_tests);
+    
+    void output_p_values(vector<vector<Model> >& models, Dataset& set, int p_tests);
 
     void output_lr_p_values(vector<Model>& models, Dataset& set, int p_tests);
 
@@ -99,7 +103,10 @@ class Analysis{
 
 };
 
+bool sortModelsByCVC(mdr::Model& left, mdr::Model& right);
+
 }
+
 
 #endif
 

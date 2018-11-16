@@ -241,6 +241,49 @@ void FormattedOutput::output_p_values(ostream& os, vector<Model>& models, Datase
 
 
 ///
+/// Output p values
+/// @param os ostream 
+/// @param models
+/// @param set
+/// @param p_tests Total number of tests run
+///
+void FormattedOutput::output_p_values(ostream& os, vector<vector<Model> >& models, Dataset& set,
+  int p_tests){
+  
+  float min = 1/float(p_tests);
+  
+  // precision determined by number of p_tests done
+  int precision = 0;
+  int result = p_tests;
+  
+  do{
+    result = result/10;  
+    precision++;
+  }while (result > 1);
+  
+  os << "Permutation p values:" << endl;
+  os << setprecision(precision);
+  for(unsigned int i=0; i<models.size(); i++){
+  	for(unsigned j=0; j<models[i].size(); j++){
+		if(models[i][j].combination.size() > 0){
+		  stringstream ss;
+		  for(unsigned int k=0; k<models[i][j].combination.size(); k++){
+		   ss << set.snp_names[models[i][j].combination[k]] << " ";
+		  }
+		  os << setw(20) << left << ss.str();
+		  if(models[i][j].get_pvalue() < min)
+			os << "< " << min;
+		  else
+			os << models[i][j].get_pvalue();
+	  
+		  os << endl;
+		}  		
+  	}
+  }
+  
+}
+
+///
 /// Output LR p values
 /// @param os ostream 
 /// @param models

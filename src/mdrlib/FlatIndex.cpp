@@ -87,8 +87,8 @@ vector< int> FlatIndex::decode_index(int index, int numloci){
 /// Returns total size of array needed
 /// @return size
 ///
-int FlatIndex::get_size_array( int numLoci){
-  int size=1;
+unsigned int FlatIndex::get_size_array( int numLoci){
+  unsigned int size=1;
 
   for( int i=1; i <= numLoci; i++)
     size *= num_genos_per_locus;

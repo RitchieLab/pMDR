@@ -269,6 +269,17 @@ void OutputWriter::output_pvalues(vector<Model>& best_models, Dataset& set, int 
 }
 
 ///
+/// Output p values to formatted output
+/// @param best_models
+/// @param set Dataset
+/// 
+void OutputWriter::output_pvalues(vector<vector<Model> >& best_models, Dataset& set, int p_tests){
+  if(form_out != NULL)
+    form_out->output_p_values(form_os, best_models, set, p_tests);
+}
+
+
+///
 /// Output LR p values to formatted output
 /// @param best_models
 /// @param set Dataset
