@@ -63,7 +63,7 @@ class Model{
     float get_trainerr(){return trainerror;}
     float get_predicterror(){return predicterror;}
     float get_predictavg(){return predictavg;}
-    float get_balpredavg(){return balpredavg;}
+    float get_balpredavg() const{return balpredavg;}
     float get_balpredicterror(){return balpredicterror;}
     float get_totalnotclassified(){return totalnotclassified;}
     float get_threshold(){return threshold;}
@@ -71,7 +71,7 @@ class Model{
     float get_totalmissdata(){return totalmissdata;}
     float get_missingPredValue(){return missingPredValue;}
     float get_pvalue(){return pvalue;}
-    int get_cvc(){return cvc;}
+    int get_cvc() const{return cvc;}
     float get_interact_llr(){return interact_llr;}
     float get_lr_pvalue(){return lr_pvalue;}
     

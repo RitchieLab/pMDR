@@ -12,7 +12,7 @@ endif
 CC = g++
 # LIB= $(LIBDIR)libmdr.a
 CFLAGS= -O2 -Wall -Wno-deprecated
-CFLAGS= -g -Wall -Wno-deprecated
+#CFLAGS= -g -Wall -Wno-deprecated
 OBJS = ComboGenerator.o ConfigFileReader.o Config.o DatafileReader.o \
 	Dataset.o FlatIndex.o FormattedOutput.o MapFileReader.o \
 	MatrixOutput.o MDR.o MDRExcept.o Model.o OutputWriter.o \

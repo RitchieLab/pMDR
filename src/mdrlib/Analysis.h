@@ -103,7 +103,7 @@ class Analysis{
 
 };
 
-bool sortModelsByCVC(mdr::Model& left, mdr::Model& right);
+bool sortModelsByCVC(const mdr::Model& left, const mdr::Model& right);
 
 }
 

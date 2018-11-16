@@ -18,7 +18,7 @@ endif
 MDRDIR = ../mdrlib
 INCLUDEDIR = -I. -I$(MDRDIR)
 CCFLAGS = -Wall -O2 $(INCLUDEDIR)
-CCFLAGS = -Wall -g $(INCLUDEDIR)
+#CCFLAGS = -Wall -g $(INCLUDEDIR)
 
 #LIBDIR = -L/usr/lib/mysql -L/usr/local/lib -L../lib
 LIBDIR = -L../lib

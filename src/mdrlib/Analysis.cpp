@@ -346,7 +346,6 @@ void Analysis::get_pval_models(Dataset& set, Config& config,
   ModelTreeNode* best_node;
   int model_size_start = config.model_size_start();
   int model_size_end = config.model_size_end();
-  int curr_size=0;
   vector<unsigned int> best_combo;
   
   vector<Model> tmpModels;
@@ -570,7 +569,7 @@ void Analysis::output_all_models(vector<Model>& models,std::vector<unsigned int>
 	// clear to save memory
 // 	training_results.clear();
 }
-bool sortModelsByCVC(mdr::Model& left, mdr::Model& right){
+bool sortModelsByCVC(const mdr::Model& left, const mdr::Model& right){
 	if(left.get_cvc() != right.get_cvc())
     	return left.get_cvc() > right.get_cvc();
     return left.get_balpredavg() < right.get_balpredavg();
