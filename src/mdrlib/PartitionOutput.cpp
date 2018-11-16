@@ -39,7 +39,7 @@ void PartitionOutput::add_header(ostream& os, int max_locus){
   
   maximum_model_size = max_locus;
   
-  os << "*****************************************************" << endl;
+  os << "************************************************************" << endl;
   
 }
 
@@ -52,7 +52,7 @@ void PartitionOutput::add_header(ostream& os, int max_locus){
 /// 
 void PartitionOutput::output_crossval_header(ostream& os, int curr_cv){
   os << "Model Partitions - Crossvalidation Interval " << curr_cv << endl;
-  os << "-----------------------------------------------------" << endl;
+  os << "------------------------------------------------------------" << endl;
 }
 
 
@@ -84,9 +84,9 @@ void PartitionOutput::output_model(ostream& os, Model& model, int curr_cv,
     os << set.snp_names[model.combination[i]] << " ";
   os << "]" << endl;
   
-  os << "Genotype" << setw(4) << "A" << setw(5) << "U" << setw(5) << "TOT" << setw(17) 
-     << "Ratio/Threshold" << setw(10) << "Risk" << endl;
-  os << "-----------------------------------------------------" << endl;
+  os << "Genotype" << setw(5) << "A" << setw(7) << "U" << setw(7) << "TOT" << setw(18) 
+     << "Ratio/Threshold" << setw(15) << "Risk" << endl;
+  os << "------------------------------------------------------------" << endl;
   
   indexes = includedIndexes[model_size];
   
@@ -97,15 +97,15 @@ void PartitionOutput::output_model(ostream& os, Model& model, int curr_cv,
     vector<int> genotype = set.converter().decode_index(indexes[currIndex], combo.size());
     stringstream ss;
     for(i=0; i<genotype.size(); i++)
-      ss << genotype[i];
+      ss << genotype[i] << " ";
       
     // output the stats
-    os << left << setw(5) << ss.str() << right << setprecision(5) << setw(7)
+    os << left << setw(6) << ss.str() << right << setprecision(5) << setw(7)
       << model.training.affected[indexes[currIndex]]
-      << setw(5) << model.training.unaffected[indexes[currIndex]]
-      << setw(5) << model.training.unaffected[indexes[currIndex]] + 
+      << setw(7) << model.training.unaffected[indexes[currIndex]]
+      << setw(7) << model.training.unaffected[indexes[currIndex]] + 
         model.training.affected[indexes[currIndex]]
-      << setw(7) << setprecision(3) << model.training.affected[indexes[currIndex]] /
+      << setw(9) << setprecision(3) << model.training.affected[indexes[currIndex]] /
         float(model.training.unaffected[indexes[currIndex]])
       << " / "
       << model.get_threshold()
@@ -140,8 +140,8 @@ void PartitionOutput::output_best(ostream& os, vector<Model>& best_models,
   
   last_cv = 0;
   
-  os << "*****************************************************" << endl;
-  os << "----- Partitions For Best Models Across All Data ----" << endl;
+  os << "************************************************************" << endl;
+  os << "------- Partitions For Best Models Across All Data ---------" << endl;
   
   
   for(unsigned int i=0; i<best_models.size(); i++){

@@ -53,7 +53,7 @@ int main(int argc, char* argv[]){
   MPI_Comm_size(MPI_COMM_WORLD, &nproc);
 
   if(myrank ==0){
-    cout << "\n\tParallel MDR " << version_num << "\t09/07/18" << endl;
+    cout << "\n\tParallel MDR " << version_num << "\t09/19/18" << endl;
   }
 
   if(argc < 2){
