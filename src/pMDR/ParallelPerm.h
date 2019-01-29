@@ -37,6 +37,10 @@ class sort_ascending{
     }
 };
 
+/// key is fitness and value is the position in the tree
+typedef Utility::RBTree<float, unsigned int, floatLT > PermModelTree;
+typedef Utility::RBTreeNode<float, unsigned int, floatLT > PermModelTreeNode;
+
 /// Conducts permutation testing
 class ParallelPerm{
 
@@ -52,7 +56,7 @@ class ParallelPerm{
       LogOutput& log_out);
     
     /// returns p value corresponding to the value passed
-    float get_p_value(float value);
+    float get_p_value(float value, int rank);
     
     float get_lr_p_value(float value);
     
@@ -64,9 +68,11 @@ class ParallelPerm{
   
     int total_perms;
     
-    ModelTree permuted_models;
+    vector<PermModelTree> permuted_models;
     
     vector<float> lr_results;
+    
+    permutationTypes permtype;
     
 };
 

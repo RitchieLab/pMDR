@@ -112,6 +112,8 @@ template <class K, class D, typename C > class RBTree
 
         // Clear wipes the complete tree
         void Clear();
+        // Sets the max size
+        void SetMaxSize(int s);
 
         // First and Last are the head and tail of the doubly linked list
         RBTreeNode<K,D,C> * GetFirst() const;
@@ -390,6 +392,14 @@ void            RBTree<K,D,C>::Clear()
     Last = NULL;
     Root = NIL;
     mCount = 0;
+}
+
+//---------------------------------------------------------------------------
+template <class K, class D, typename C>
+inline
+void            RBTree<K,D,C>::SetMaxSize(int s)
+{
+	maxSize=s;
 }
 
 //---------------------------------------------------------------------------

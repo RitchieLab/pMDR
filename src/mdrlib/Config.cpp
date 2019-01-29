@@ -60,6 +60,7 @@ void Config::initialize(){
   fitness_type = BalancedAccuracy;
   biofilename = "";
   flush_models = false;
+  perm_type = Combined;
 }
 
 

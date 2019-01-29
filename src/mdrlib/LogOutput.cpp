@@ -45,6 +45,11 @@ void LogOutput::open_log(string filename){
 }
 
 
+void LogOutput::add_message(string message){
+	append_log();
+	logstream << message << endl;
+}
+
 void LogOutput::append_log(){
   if(logstream.is_open()){
     logstream.close();

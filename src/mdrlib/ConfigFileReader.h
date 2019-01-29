@@ -94,12 +94,13 @@ class ConfigFileReader{
       BioFileName,
       BalAccThreshold,
       OutputAllModels,
-      ModelFileName
+      ModelFileName,
+      PermutationMethod
     };
-
 
     map<string, configKeyWords> key_map;
     map<string, fitnessTypes> fitness_map;
+    map<string, permutationTypes> permutation_map;
 
 };
 

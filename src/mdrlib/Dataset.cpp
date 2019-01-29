@@ -21,6 +21,7 @@
 #include <iostream>
 #include <sstream>
 #include <cstdlib>
+#include "Stringmanip.h"
 using namespace std;
 
 namespace mdr{
@@ -188,6 +189,13 @@ void Dataset::split_data(){
     else
       unaffecteds.push_back(i);
   }
+  if(int(affecteds.size()) < 2){
+   	throw MDRExcept("ERROR:  " + Stringmanip::itos(int(affecteds.size())) + " individual(s) with status 1 in input.");
+  }
+  if(int(unaffecteds.size()) < 2){
+   	throw MDRExcept("ERROR:  " + Stringmanip::itos(int(unaffecteds.size())) + " individual(s) with status 0 in input.");
+  }
+  
 
   if(random_shuffle_on){ // If the RANDOMSHUFFLE was ON in the config file
     // Shuffle the Affecteds and Unaffecteds, randomizing the data

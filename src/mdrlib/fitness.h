@@ -29,6 +29,13 @@ enum fitnessTypes{
   OddsRatio
 };
 
+/// Lists types of permutation methods available
+enum permutationTypes{
+  TopRank,
+  Ranked,
+  Combined
+};
+
 }
 
 #endif

@@ -36,27 +36,31 @@ class sort_ascending{
     }
 };
 
+/// key is fitness and value is the position in the tree
+typedef Utility::RBTree<float, unsigned int, floatLT > PermModelTree;
+typedef Utility::RBTreeNode<float, unsigned int, floatLT > PermModelTreeNode;
 
 class PermutationTester{
 
   public:
     
     /// returns p value corresponding to the value passed
-    float get_p_value(float value);
+     float get_p_value(float value, int rank);
     
     /// runs permutations and creates tree from best results
     void run_permutations(unsigned int num_permutations, Dataset& set, Config& config, LogOutput& log_out);
     
     /// returns p value for the lr value
     float get_lr_p_value(float value);
-    
+   
   private:
   
     int total_perms;
     
-    ModelTree permuted_models;
+    vector<PermModelTree> permuted_models;
     
     vector<float> lr_results;
+    permutationTypes permtype;
   
 };
 

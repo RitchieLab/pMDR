@@ -71,10 +71,15 @@ void ConfigFileReader::initialize(){
   key_map["BIOFILTERNAME"] = BioFileName;
   key_map["OUTPUTALL"] = OutputAllModels;
   key_map["MODELFILE"] = ModelFileName;
+  key_map["PERMTYPE"] = PermutationMethod;
 
   fitness_map["ERROR"] = Error;
   fitness_map["ODDSRATIO"] = OddsRatio;
   fitness_map["BALANCED"] = BalancedAccuracy;
+  
+  permutation_map["TOPRANKED"]=TopRank;
+  permutation_map["RANKED"]=Ranked;
+  permutation_map["COMBINED"]=Combined;
 
 }
 
@@ -132,7 +137,15 @@ Config ConfigFileReader::read_config(string configfilename){
     config.model_size_start(config.force_loci_included().size());
     config.model_size_end(config.force_loci_included().size());
   }
-
+  
+  // adjust combination sizes based on presence of model file    
+  if(config.getModelFileName().length() > 0){
+  	config.model_size_start(2);
+  	config.model_size_end(2);
+  }
+  // adjust combination sizes 
+  config.model_size_start(config.model_size_start()+config.loci_always_included().size());
+  config.model_size_end(config.model_size_end()+config.loci_always_included().size());
 
   return config;
 }
@@ -272,11 +285,17 @@ void ConfigFileReader::add_keyword(string keyword, string value, Config& config)
       }
       config.fitness(fitness_map[value]);
       break;
-		case BalAccThreshold:
+	case PermutationMethod:
+      if(permutation_map.find(value) == permutation_map.end()){
+        throw MDRExcept(value + " is not a valid value for PERMTYPE");
+      }
+      config.perm_method(permutation_map[value]);	  
+	case BalAccThreshold:
       config.set_balacc_thresh(convert_to_float(value));
-      config.models_to_keep(100000);
+//       config.models_to_keep(100000);
       break;
   }
+
 
 }
 

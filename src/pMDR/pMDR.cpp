@@ -53,7 +53,7 @@ int main(int argc, char* argv[]){
   MPI_Comm_size(MPI_COMM_WORLD, &nproc);
 
   if(myrank ==0){
-    cout << "\n\tParallel MDR " << version_num << "\t11/05/18" << endl;
+    cout << "\n\tParallel MDR " << version_num << "\t12/21/18" << endl;
   }
 
   if(argc < 2){
@@ -67,6 +67,7 @@ int main(int argc, char* argv[]){
   Config config_info;
   Dataset set;
   string base_out;
+  LogOutput log_out;
 
   try{
     config_info = reader.read_config(configfilename);
@@ -89,6 +90,8 @@ int main(int argc, char* argv[]){
 
   }
   catch(MDRExcept& me){
+  	if(myrank==0)
+	  log_out.add_message(me.get_error());
     stop_program(me);
     return(1);
   }
@@ -107,7 +110,7 @@ int main(int argc, char* argv[]){
   if(myrank ==0){ // master
     try{
 
-      LogOutput log_out(base_out + ".mdr.log");
+      log_out.open_log(base_out + ".mdr.log");
       if(config_info.getModelFileName().length() > 0){
         int idSize =  ModelFileReader::convert_model_file(config_info.getModelFileName(),tempModelfn);
         config_info.set_biofilter_filename(tempModelfn);
@@ -169,7 +172,7 @@ int main(int argc, char* argv[]){
     	        value=pvalmodels[i][j].training.balanced_error;
         	  else
             	value=pvalmodels[i][j].get_balpredavg();
-	          pvalmodels[i][j].set_pvalue(perms.get_p_value(value));
+	          pvalmodels[i][j].set_pvalue(perms.get_p_value(value, j));
 
           	if(config_info.regress_test()){
             	pvalmodels[i][j].set_lr_pvalue(perms.get_lr_p_value(best_models[i].get_interact_llr()));
@@ -188,6 +191,7 @@ int main(int argc, char* argv[]){
       cout << endl;
     }
     catch(MDRExcept& me){
+      log_out.add_message(me.get_error());
       stop_program(me);
       return(1);
     }
@@ -200,6 +204,7 @@ int main(int argc, char* argv[]){
         config_info.set_id_size(idSize);
     }
 
+	try{
     SlaveAnalysis analyzer;
 
     analyzer.set_rank(myrank);
@@ -222,6 +227,9 @@ int main(int argc, char* argv[]){
     if(config_info.num_ptests() >= 1){
       ParallelPerm perms;
       perms.run_slave_permutations(config_info.num_ptests(), set, config_info);
+    }
+    }
+    catch(MDRExcept& me){
     }
   }
 

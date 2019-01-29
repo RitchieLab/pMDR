@@ -120,6 +120,9 @@ class Config{
 
     fitnessTypes fitness(){ return fitness_type;}
     void fitness(fitnessTypes fit){fitness_type = fit;}
+    
+    permutationTypes perm_method(){return perm_type;}
+    void perm_method(permutationTypes p){perm_type = p;}
 
     bool regress_test(){return regress_test_on;}
     void regress_test(bool do_test){regress_test_on = do_test;}
@@ -159,6 +162,7 @@ class Config{
     float checkpoint_interval, balaccthresh;
 
     fitnessTypes fitness_type;
+    permutationTypes perm_type;
 
     vector<string> always_included, force_loci;
 };

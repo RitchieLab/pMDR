@@ -36,7 +36,7 @@ void version(string version_date, string version_num);
 
 int main(int argc, char* argv[]){
 
-  string version_date = "11/05/18";
+  string version_date = "12/21/18";
   string version_num = "1.0.1";
 
   version(version_date, version_num);
@@ -48,6 +48,7 @@ int main(int argc, char* argv[]){
   }
 
   string configfilename(argv[1]);
+   LogOutput log_out;
 
   try{
     ConfigFileReader reader;
@@ -109,7 +110,7 @@ int main(int argc, char* argv[]){
     }
 
     config_info.basename(base_out);
-    LogOutput log_out(base_out + ".mdr.log");
+    log_out.open_log(base_out + ".mdr.log");
 
     string tempModelfn=base_out + "mdrmodels.tmp.txt";
 
@@ -166,7 +167,6 @@ int main(int argc, char* argv[]){
 	  // assign p values
 	  float value;
 
-
 	  for(unsigned int i=config_info.model_size_start(); i<=config_info.model_size_end(); i++){	  	  
 	  	for(unsigned int j=0; j<pvalmodels[i].size(); j++){
 	  		if(config_info.num_crossval() == 1)
@@ -174,8 +174,8 @@ int main(int argc, char* argv[]){
 	  		else{
 	  			value=pvalmodels[i][j].get_balpredavg();
 	  		}
-	  			
-	  		pvalmodels[i][j].set_pvalue(perms.get_p_value(value));
+
+	  		pvalmodels[i][j].set_pvalue(perms.get_p_value(value, j));
 	  		if(config_info.regress_test()){
 	  			pvalmodels[i][j].set_lr_pvalue(perms.get_lr_p_value(pvalmodels[i][j].get_interact_llr()));
 		  	}
@@ -209,6 +209,7 @@ int main(int argc, char* argv[]){
     }
 
   }catch(MDRExcept ex){
+  	log_out.add_message(ex.get_error());
     exit_app(ex);
   }
 
@@ -242,7 +243,7 @@ void usage(){
 /// @param  me MDRExcept error object
 ///
 void exit_app(MDRExcept & me){
-  std::cout << me.get_error() << std::endl;
+  std::cout << "\n" << me.get_error() << std::endl << std::endl;
   exit(1);
 }
 

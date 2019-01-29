@@ -45,6 +45,7 @@ class LogOutput{
       bool include_lr=false);
     
     void total_models(double total_mods);
+    void add_message(string message);
 
   private:
     

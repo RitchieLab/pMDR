@@ -349,6 +349,7 @@ void Analysis::get_pval_models(Dataset& set, Config& config,
   vector<unsigned int> best_combo;
   
   vector<Model> tmpModels;
+  pvalmodels.clear();
   pvalmodels.assign(model_size_end+1, tmpModels);
 
   Model curr_model;
@@ -357,7 +358,6 @@ void Analysis::get_pval_models(Dataset& set, Config& config,
   Stat* calculator = mdr.get_calculator();
 
   // for each model order determine best model
-  // only look at best models in each tree when calculating
   for(int curr_size = model_size_start; curr_size <= model_size_end; curr_size++){
 	unsigned int models_kept = training_results.result_trees[0][curr_size]->GetCount();
     curr_model.resize_cell_status_vector(set.converter().get_size_array(curr_size));
@@ -384,7 +384,7 @@ void Analysis::get_pval_models(Dataset& set, Config& config,
         	curr_model.set_balpredavg(curr_model.testing.balanced_error);
 	        model_map[curr_model.combination] = curr_model;
 	        cvc_count[curr_model.combination] = 1;
-    	  }	      
+    	  }
     	  else{
 	        model_map[curr_model.combination].set_cvc(1 + model_map[curr_model.combination].get_cvc());
 	        model_map[curr_model.combination].set_predictavg(curr_model.testing.error +
