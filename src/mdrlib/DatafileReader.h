@@ -38,6 +38,7 @@ class DatafileReader:public FileReader{
   
   private:
   
+  	bool is_integer(string numstr);
     void count_total(string datafile, Dataset& set);
     void fill_set(string datafile, Dataset& set);
     bool ids_included;

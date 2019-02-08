@@ -53,7 +53,7 @@ int main(int argc, char* argv[]){
   MPI_Comm_size(MPI_COMM_WORLD, &nproc);
 
   if(myrank ==0){
-    cout << "\n\tParallel MDR " << version_num << "\t12/21/18" << endl;
+    cout << "\n\tParallel MDR " << version_num << "\t02/07/19" << endl;
   }
 
   if(argc < 2){
@@ -68,6 +68,17 @@ int main(int argc, char* argv[]){
   Dataset set;
   string base_out;
   LogOutput log_out;
+  
+  if(argc==3){
+    base_out = argv[2];
+  }
+  else{
+    base_out = get_basename(configfilename);
+  }
+  config_info.basename(base_out);
+  if(myrank==0){
+	log_out.open_log(base_out + ".mdr.log");
+  }
 
   try{
     config_info = reader.read_config(configfilename);
@@ -96,21 +107,11 @@ int main(int argc, char* argv[]){
     return(1);
   }
 
-      if(argc==3){
-        base_out = argv[2];
-      }
-      else{
-        base_out = get_basename(configfilename);
-      }
-      config_info.basename(base_out);
-
   string tempModelfn=base_out + "mdrmodels.tmp.txt";
 
   // need to split here between master and slave analysis
   if(myrank ==0){ // master
     try{
-
-      log_out.open_log(base_out + ".mdr.log");
       if(config_info.getModelFileName().length() > 0){
         int idSize =  ModelFileReader::convert_model_file(config_info.getModelFileName(),tempModelfn);
         config_info.set_biofilter_filename(tempModelfn);

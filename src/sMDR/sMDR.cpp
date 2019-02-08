@@ -36,7 +36,7 @@ void version(string version_date, string version_num);
 
 int main(int argc, char* argv[]){
 
-  string version_date = "12/21/18";
+  string version_date = "02/07/19";
   string version_num = "1.0.1";
 
   version(version_date, version_num);
@@ -49,10 +49,30 @@ int main(int argc, char* argv[]){
 
   string configfilename(argv[1]);
    LogOutput log_out;
+   
+    std::string base_out;
+    if(argc==3){
+      base_out = argv[2];
+    }
+    else{
+      string::size_type directorySep, period;
+      directorySep = configfilename.rfind("/");
+      if(directorySep==string::npos)
+        directorySep=0;
+      else
+        directorySep++;
+      period = configfilename.rfind(".");
+      if(period==string::npos)
+        period = configfilename.length();
+      base_out = configfilename.substr(0,period);
+    }
+   
 
   try{
     ConfigFileReader reader;
     Config config_info = reader.read_config(configfilename);
+    config_info.basename(base_out);
+    log_out.open_log(base_out + ".mdr.log");
 
     // set random seed
     srand(config_info.random_seed());
@@ -92,25 +112,25 @@ int main(int argc, char* argv[]){
 //     logfile.add_time();
 //     logfile.add_line("\n");
 
-    std::string base_out;
-    if(argc==3){
-      base_out = argv[2];
-    }
-    else{
-      string::size_type directorySep, period;
-      directorySep = configfilename.rfind("/");
-      if(directorySep==string::npos)
-        directorySep=0;
-      else
-        directorySep++;
-      period = configfilename.rfind(".");
-      if(period==string::npos)
-        period = configfilename.length();
-      base_out = configfilename.substr(0,period);
-    }
-
-    config_info.basename(base_out);
-    log_out.open_log(base_out + ".mdr.log");
+//     std::string base_out;
+//     if(argc==3){
+//       base_out = argv[2];
+//     }
+//     else{
+//       string::size_type directorySep, period;
+//       directorySep = configfilename.rfind("/");
+//       if(directorySep==string::npos)
+//         directorySep=0;
+//       else
+//         directorySep++;
+//       period = configfilename.rfind(".");
+//       if(period==string::npos)
+//         period = configfilename.length();
+//       base_out = configfilename.substr(0,period);
+//     }
+// 
+//     config_info.basename(base_out);
+//     log_out.open_log(base_out + ".mdr.log");
 
     string tempModelfn=base_out + "mdrmodels.tmp.txt";
 

@@ -32,20 +32,15 @@ void DatafileReader::read_datafile(string datafile, Dataset& set){
   
   // initialize data within dataset
   set.initialize_data();
-  
+
   // fills dataset
   fill_set(datafile, set);  
 
 }
 
 
-
 void DatafileReader::fill_set(string datafile, Dataset& set){
   
-  int read_as_int;
-  
-  int num_loci = set.get_num_loci();
-  int num_inds = set.get_num_inds();
   int max_locus_value = set.get_max_locus_value();
   int missing_value = set.get_missing_value();
   int resetmissing = max_locus_value+1;
@@ -54,68 +49,84 @@ void DatafileReader::fill_set(string datafile, Dataset& set){
   ifstream infile;
   infile.open(datafile.c_str());
   
-  int affectedTotal=0, unaffectedTotal=0;
-  string read_as_string;
+  int affectedTotal=0, unaffectedTotal=0;  
+  string line, value;
+  int curr_ind=0, lineno=0;
   
-  // Read the data from the file into the data array
-  for(int i = 0; i < num_inds; i++){
   
+  while(getline(infile, line)){
+  	
+  	lineno++;
+  	stringstream ss(line);
     // if IDs are included skip the first column
     // MDR doesn't need ID information
     if(ids_included){
-      infile >> read_as_int;
+      ss >> value;
     }
-  
-    infile >> read_as_int;
-//    infile >> read_as_string;
-//    if(read_as_string.compare("NA")==0 || read_as_string.compare("na")==0 || read_as_string.compare("Na")==0){
-    if(read_as_int == missing_value){
+    
+    ss >> value;
+
+    if(!is_integer(value)){
+    	throw MDRExcept("\nError:\t" + value + " is not an integer on line " + Stringmanip::itos(lineno));
+    }
+    int statusvalue = Stringmanip::stoi(value);
+    if(statusvalue == missing_value){
       // skip this line
-      getline(infile, read_as_string);
-      i--;
       continue;
     }
-//    else{
-//       read_as_int=Stringmanip::stoi(read_as_string);
-//    }
-    set.data[i][0] = read_as_int;
-    if(set.data[i][0] == 1){
+    set.data[curr_ind][0]=statusvalue;
+    if(set.data[curr_ind][0] == 1){
       affectedTotal++;
     }
-    else if(set.data[i][0] == 0){
+    else if(set.data[curr_ind][0] == 0){
       unaffectedTotal++;
     }
     else{
       throw MDRExcept("All individual status (first column) must be coded as 0 or 1 in " + datafile);
-    }
-    for(int j = 1; j <= num_loci; j++){
-      infile >> read_as_int;
-
-      set.data[i][j] = read_as_int;
-      
+    }    
+	int nloc=1;
+    
+    while(ss >> value){
+   	 	if(!is_integer(value)){
+    		throw MDRExcept("\nError:\t" + value + " is not an integer on line " + Stringmanip::itos(curr_ind+1));
+    	}
+    	set.data[curr_ind][nloc]=Stringmanip::stoi(value);
       //check that all data are between min and maximum values
-      if(set.data[i][j] != missing_value && (set.data[i][j] < 0 || set.data[i][j] > max_locus_value)){
+      if(set.data[curr_ind][nloc] != missing_value && (set.data[curr_ind][nloc] < 0 || set.data[curr_ind][nloc] > max_locus_value)){
         ostringstream maxLoc, missVal;
         maxLoc << max_locus_value;
         missVal << missing_value;
-        throw MDRExcept("Value found was " + Stringmanip::itos(read_as_int) + ". All genotypes must be between 0 and the MAXLOCUSVALUE (" + 
+        throw MDRExcept("Value found was " +value + ". All genotypes must be between 0 and the MAXLOCUSVALUE (" + 
           maxLoc.str() + ") or equal to the value of MISSING parameter (" +
           missVal.str() + ")");
       }
-      
-     
-      // reset any missing values to be one more than the maxlocivalue
-      if(set.data[i][j] == missing_value){
-        set.data[i][j] = resetmissing;
+              // reset any missing values to be one more than the maxlocivalue
+      if(set.data[curr_ind][nloc] == missing_value){
+        set.data[curr_ind][nloc] = resetmissing;
         set.set_contains_missing(true);
-      }
+      }  	
+    		
+    	nloc++;
     }
-  }
-  infile.close();  
+    
+  	curr_ind++;
   
-  // calculate set threshold and pass to the dataset
+  }
+
+  infile.close(); 
+  
+    // calculate set threshold and pass to the dataset
   set.set_entire_threshold(float(affectedTotal) / unaffectedTotal);
   
+}
+
+
+///
+/// Check that string evaluates as an integer
+///
+bool DatafileReader::is_integer(string numstr){
+	std::size_t found = numstr.find_first_not_of("0123456789-");
+	return found == string::npos;
 }
 
 
@@ -165,13 +176,10 @@ void DatafileReader::count_total(string datafile, Dataset& set){
     subss >> out;
     pheno = Stringmanip::stoi(out);
 //    if(out.compare("NA")==0 || out.compare("na")==0 || out.compare("Na")==0){
-    if(pheno == set.get_missing_value()){
-      linecount--;
-    }
    if(pheno == set.get_missing_value()){
       linecount--;
     }
-    else if((out[0] != '0' and out[0] != '1') or out.length() > 1){
+    else if( !is_integer(out) || ( out[0] != '0' && out[0] != '1') || out.length() > 1 ){
 //    if((out[0] != '0' and out[0] != '1') or out.length() > 1){
       ids_included = true;
     }
