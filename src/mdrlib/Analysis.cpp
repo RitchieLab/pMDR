@@ -183,7 +183,8 @@ void Analysis::test_single_model(vector<unsigned int>& loci, vector<Model>& mode
     
     for(curr_cv=0; curr_cv < total_cv; curr_cv++){
     	if(models[curr_cv].training.balanced_error <= error_threshold)
-	      training_results.Insert(models[curr_cv].training.balanced_error, models[curr_cv].combination, curr_cv);
+//     	   models[curr_cv].clear_status_vector();
+	      training_results.Insert(models[curr_cv].training.balanced_error, models[curr_cv], curr_cv);
     }
 }
 
@@ -228,14 +229,15 @@ void Analysis::output_models(Dataset& set, Config& config, string base_out){
   for(unsigned int curr_cv=0; curr_cv < total_cv; curr_cv++){
     for(curr_size=model_size_start; curr_size <= model_size_end; curr_size++){
       // resize model to match current size
-      curr_model.resize_cell_status_vector(set.converter().get_size_array(curr_size));
+//       curr_model.resize_cell_status_vector(set.converter().get_size_array(curr_size));
 
       for(curr_node = training_results.result_trees[curr_cv][curr_size]->GetLast();
         curr_node != NULL; curr_node = curr_node->GetPrev()){
           // blank stats in model
-          curr_model.reset_stats();
-          curr_model.combination = curr_node->GetData();
-          mdr.test_model(curr_model, set, curr_cv);
+//           curr_model.reset_stats();
+//           curr_model.combination = curr_node->GetData();
+//           mdr.test_model(curr_model, set, curr_cv);
+		  curr_model = curr_node->GetData();
           out_writer.output_model(curr_cv, curr_model, total_cv, set,
             mdr.get_calculator());
       }
@@ -271,7 +273,7 @@ vector<Model> Analysis::get_best_models(Dataset& set, Config& config){
   // only look at best models in each tree when calculating
   for(curr_size = model_size_start; curr_size <= model_size_end; curr_size++){
 
-    curr_model.resize_cell_status_vector(set.converter().get_size_array(curr_size));
+//     curr_model.resize_cell_status_vector(set.converter().get_size_array(curr_size));
 
     float avg_bal_error = 0.0;
     float avg_error = 0.0;
@@ -280,10 +282,11 @@ vector<Model> Analysis::get_best_models(Dataset& set, Config& config){
 
     for(unsigned int curr_cv=0; curr_cv < total_cv; curr_cv++){
       best_node=training_results.result_trees[curr_cv][curr_size]->GetLast();
-      curr_model.reset_stats();
-      curr_model.combination = best_node->GetData();
+//       curr_model.reset_stats();
+//       curr_model.combination = best_node->GetData();
+      curr_model = best_node->GetData();
 
-      mdr.test_model(curr_model, set, curr_cv);
+//       mdr.test_model(curr_model, set, curr_cv);
       if(model_map.find(curr_model.combination) == model_map.end()){
         curr_model.set_cvc(1);
         curr_model.set_predictavg(curr_model.testing.error);
@@ -375,9 +378,10 @@ void Analysis::get_pval_models(Dataset& set, Config& config,
 		modrank=0;
 		for(best_node=training_results.result_trees[curr_cv][curr_size]->GetLast(); best_node != NULL;
 			best_node=best_node->GetPrev()){
-    	  curr_model.reset_stats();
-	      curr_model.combination = best_node->GetData();
-	      mdr.test_model(curr_model, set, curr_cv);	
+//     	  curr_model.reset_stats();
+// 	      curr_model.combination = best_node->GetData();
+	      curr_model = best_node->GetData();
+// 	      mdr.test_model(curr_model, set, curr_cv);	
       	  if(model_map.find(curr_model.combination) == model_map.end()){
 		        curr_model.set_cvc(1);
     	    curr_model.set_predictavg(curr_model.testing.error);

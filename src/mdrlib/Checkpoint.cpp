@@ -74,7 +74,7 @@ void Checkpoint::write_checkpoint(TrainList& models, ComboGenerator* generator, 
         curr_node != NULL; curr_node = curr_node->GetPrev()){
         
         for(curr_loc=0; curr_loc < curr_model_size; ++curr_loc){
-          checkstream << curr_node->GetData()[curr_loc] << " ";
+          checkstream << curr_node->GetData().combination[curr_loc] << " ";
         }
         checkstream << curr_node->GetKey() << endl;
       }
@@ -128,6 +128,8 @@ double Checkpoint::read_checkpoint(TrainList& models, ComboGenerator* generator)
   checkstream >> total_cv;
   int curr_cv;
   checkstream >> curr_cv;
+  
+  Model mod;
 
   while(curr_cv < total_cv){
     
@@ -139,7 +141,8 @@ double Checkpoint::read_checkpoint(TrainList& models, ComboGenerator* generator)
         for(loc=0; loc < curr_model_size; ++loc)
           checkstream >> model_loci[loc];
         checkstream >> fitness;
-        models.Insert(fitness, model_loci, curr_cv);
+        mod.combination = model_loci;
+        models.Insert(fitness, mod, curr_cv);
       }
       
       checkstream >> curr_model_size >> total_models;

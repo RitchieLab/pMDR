@@ -22,6 +22,7 @@
 
 #include "rbtree.h"
 #include <vector>
+#include "Model.h"
 
 using namespace std;
 
@@ -36,8 +37,8 @@ struct floatLT {
         }
 };
 
-typedef Utility::RBTree<float, vector<unsigned int>, floatLT > ModelTree;
-typedef Utility::RBTreeNode<float, vector<unsigned int>, floatLT > ModelTreeNode;
+typedef Utility::RBTree<float, Model, floatLT > ModelTree;
+typedef Utility::RBTreeNode<float, Model, floatLT > ModelTreeNode;
 
 /// Holds results for the best models in the train list
 class TrainList{
@@ -50,7 +51,7 @@ class TrainList{
     
     unsigned int num_crossvalidation_intervals(){return result_trees.size();}
     
-    void Insert(float fitness, vector<unsigned int>& loci, int cv);
+    void Insert(float fitness, Model& mod, int cv);
     
     void initialize_list(int cv, int max_loc_comb, int model_max);
     

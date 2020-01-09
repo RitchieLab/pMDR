@@ -106,7 +106,8 @@ void sAnalysis::train_models(Dataset& set, LogOutput& log_out){
 
     num_combos = generator->ComboList.size();
     for(curr_combo=0; curr_combo < num_combos; curr_combo++){
-      test_single_model(generator->ComboList[curr_combo], models, set, output_all);
+//       test_single_model(generator->ComboList[curr_combo], models, set, output_all);
+      test_single_model(generator->ComboList[curr_combo], models, set, true);
       if(output_all)
       	output_all_models(models, generator->ComboList[curr_combo]);
     }

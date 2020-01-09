@@ -82,8 +82,8 @@ void TrainList::clear(){
 /// @param cv Crossvalidation interval for model
 /// @return
 ////
-void TrainList::Insert(float fitness, vector<unsigned int>& loci, int cv){
-  result_trees[cv][loci.size()]->Add(fitness, loci);
+void TrainList::Insert(float fitness, Model& mod, int cv){
+  result_trees[cv][mod.combination.size()]->Add(fitness, mod);
 }
 
 

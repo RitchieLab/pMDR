@@ -90,6 +90,9 @@ class Model{
     void set_pvalue(float pval){ pvalue=pval;}
     void set_interact_llr(float llr){interact_llr = llr;}
     void set_lr_pvalue(float pval){ lr_pvalue=pval;}
+    
+    void clear_status_vector(){training.affected.clear(); training.unaffected.clear();
+    	testing.affected.clear(); testing.unaffected.clear();}
         
   private:
     float combined_fitness, trainerror, predicterror, predictavg, balpredavg, 
