@@ -36,7 +36,7 @@ void version(string version_date, string version_num);
 
 int main(int argc, char* argv[]){
 
-  string version_date = "02/07/19";
+  string version_date = "01/10/20";
   string version_num = "1.0.1";
 
   version(version_date, version_num);

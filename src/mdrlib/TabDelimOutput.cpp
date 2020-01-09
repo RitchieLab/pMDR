@@ -47,7 +47,7 @@ void TabDelimOutput::add_header(ostream& os, int max_locus, string fitness_used)
 	
 	os << "\tTesting True Pos\tTesting False Pos\tTesting True Neg\tTesting False Neg";
 	
-	os << endl;
+	os << "\n";
 
 }
 
@@ -86,7 +86,7 @@ void TabDelimOutput::output_model(ostream& os, Model& model, int curr_cv, Datase
   os << model.get_test_stats().misclasshigh << "\t";
   os << model.get_test_stats().classlow << "\t";
   os << model.get_test_stats().misclasslow << "\t";
-  os << endl;
+  os << "\n";
 
 }
 

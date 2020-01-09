@@ -41,7 +41,7 @@ FormattedOutput::FormattedOutput(){
 ///
 void FormattedOutput::add_header(ostream& os, int max_locus, string fitness_used){
   fitness_name = fitness_used;
-  os << "Fitness used: " << fitness_used << endl;
+  os << "Fitness used: " << fitness_used << "\n";
 }
 
 
@@ -52,16 +52,16 @@ void FormattedOutput::add_header(ostream& os, int max_locus, string fitness_used
 ///
 void FormattedOutput::output_crossval_header(ostream& os, int cv, int total_cv){
 
-  os << endl << "------------------------Subgroup # " << cv << " of " << total_cv << "-------------------------";
+  os << "\n" << "------------------------Subgroup # " << cv << " of " << total_cv << "-------------------------";
   if(data_missing){
     os << "---------------------";
   }
-  os << endl;
+  os << "\n";
 
   if(data_missing)
-    os << setw(61) << fitness_name << endl;
+    os << setw(61) << fitness_name << "\n";
   else
-    os << setw(50) << fitness_name<< endl;
+    os << setw(50) << fitness_name<< "\n";
       
   os << setw(22) << left << "Loci";
 
@@ -78,13 +78,13 @@ void FormattedOutput::output_crossval_header(ostream& os, int cv, int total_cv){
    
   os << setw(11) << "Pred Error";
     
-  os << endl;
+  os << "\n";
       
   os << "------------------------------------------------------------------";
   if(data_missing){
     os << "---------------------";
   }
-  os << endl;  
+  os << "\n";  
 
 }
 
@@ -131,7 +131,7 @@ void FormattedOutput::output_model(ostream& os, Model& model, int curr_cv, int t
     os << setw(9) << model.testing.totalmissing;
   os << model.testing.error;
 
-  os << endl << right << fixed;
+  os << "\n" << right << fixed;
 
 }
 
@@ -145,8 +145,8 @@ void FormattedOutput::output_model(ostream& os, Model& model, int curr_cv, int t
 void FormattedOutput::output_best(ostream& os, vector<Model>& best_models, int total_cv,
   Dataset& set, Stat* calculator){
   
-  os << endl << endl<< "--------------- Best Models for Each Order -------------";
-  os << "-----------" << endl;
+  os << "\n" << "\n"<< "--------------- Best Models for Each Order -------------";
+  os << "-----------" << "\n";
 
   os << left <<  setw(18) << left << "loci";
 
@@ -159,9 +159,9 @@ void FormattedOutput::output_best(ostream& os, vector<Model>& best_models, int t
   }
 
   os << setw(10) << "TotalMiss";
-  os << setw(3) << "CV" << endl;
+  os << setw(3) << "CV" << "\n";
   os << "--------------------------------------------------------";
-  os << "-----------" << endl;
+  os << "-----------" << "\n";
  
   for(unsigned int i=1; i<best_models.size(); i++){
     if(best_models[i].combination.size() == 0)
@@ -192,7 +192,7 @@ void FormattedOutput::output_best(ostream& os, vector<Model>& best_models, int t
     os << setprecision(2);
     os << setw(3) << best_models[i].get_cvc();
 
-    os << endl << fixed << right;
+    os << "\n" << fixed << right;
   }
  
 }
@@ -219,7 +219,7 @@ void FormattedOutput::output_p_values(ostream& os, vector<Model>& models, Datase
     precision++;
   }while (result > 1);
   
-  os << "Permutation p values:" << endl;
+  os << "Permutation p values:" << "\n";
   os << setprecision(precision);
   for(unsigned int i=0; i<models.size(); i++){
     if(models[i].combination.size() > 0){
@@ -233,7 +233,7 @@ void FormattedOutput::output_p_values(ostream& os, vector<Model>& models, Datase
       else
         os << models[i].get_pvalue();
       
-      os << endl;
+      os << "\n";
     }
   }
 
@@ -261,7 +261,7 @@ void FormattedOutput::output_p_values(ostream& os, vector<vector<Model> >& model
     precision++;
   }while (result > 1);
   
-  os << "Permutation p values:" << endl;
+  os << "Permutation p values:" << "\n";
   os << setprecision(precision);
   for(unsigned int i=0; i<models.size(); i++){
   	for(unsigned j=0; j<models[i].size(); j++){
@@ -276,7 +276,7 @@ void FormattedOutput::output_p_values(ostream& os, vector<vector<Model> >& model
 		  else
 			os << models[i][j].get_pvalue();
 	  
-		  os << endl;
+		  os << "\n";
 		}  		
   	}
   }
@@ -293,7 +293,7 @@ void FormattedOutput::output_p_values(ostream& os, vector<vector<Model> >& model
 void FormattedOutput::output_lr_p_values(ostream& os, vector<Model>& models, Dataset& set,
   int p_tests){
   
-  os << endl;
+  os << "\n";
   
   float min = 1/float(p_tests);
   
@@ -306,7 +306,7 @@ void FormattedOutput::output_lr_p_values(ostream& os, vector<Model>& models, Dat
     precision++;
   }while (result > 1);
   
-  os << "LR p values:" << endl;
+  os << "LR p values:" << "\n";
   os << setprecision(precision);
   for(unsigned int i=0; i<models.size(); i++){
     if(models[i].combination.size() > 0){
@@ -320,7 +320,7 @@ void FormattedOutput::output_lr_p_values(ostream& os, vector<Model>& models, Dat
       else
         os << models[i].get_lr_pvalue();
       
-      os << endl;
+      os << "\n";
     }
   }
 
@@ -337,11 +337,11 @@ void FormattedOutput::output_lr_p_values(ostream& os, vector<Model>& models, Dat
 ///
 void FormattedOutput::output_single_best(ostream& os, Model& model, Dataset& set){
 
-  os << endl << "******* Single Best Model **********" << endl;
+  os << "\n" << "******* Single Best Model **********" << "\n";
   os << " Model [ ";
   for(unsigned int i=0; i<model.combination.size(); i++)
     os << set.snp_names[model.combination[i]] << " ";
-  os << "]" << endl << endl;
+  os << "]" << "\n" << "\n";
 
 }
 
